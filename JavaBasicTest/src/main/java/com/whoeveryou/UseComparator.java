@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;  
   
 public class UseComparator {  
+	
     @SuppressWarnings("unchecked")
 	public static void main(String args[]) {  
         List<Book> list = new ArrayList<Book>();
