@@ -1,11 +1,15 @@
 package cn.edu.buct.ray;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Random;
 
 public class GAPuffSolver {
 
 	private double crossOverRate;
-	private double[][] densityMeasured;
+	private List<Sensor> sensors;
 	private int generationBound;
 	private double maxQ0;
 	private double maxX0;
@@ -14,93 +18,33 @@ public class GAPuffSolver {
 	private double minQ0;
 	private double minX0;
 	private double minY0;
-
 	private double mutationRate;
 	private int sizePopulation;
 	private double stopE;
 	private int stability;
-	private double t;
 	private double u;
-	
-	private static int[] randomCommon(int min, int max, int n){  
-	    if (n > (max - min + 1) || max < min) {  
-	           return null;  
-	       }  
-	    int[] result = new int[n];  
-	    int count = 0;  
-	    while(count < n) {  
-	        int num = (int) (Math.random() * (max - min)) + min;  
-	        boolean flag = true;  
-	        for (int j = 0; j < n; j++) {  
-	            if(num == result[j]){  
-	                flag = false;  
-	                break;  
-	            }  
-	        }  
-	        if(flag){  
-	            result[count] = num;  
-	            count++;  
-	        }  
-	    }  
-	    return result;  
-	}
 
-	public GAPuffSolver(double[][] densityMeasured, int stability, double u, double t) {
-		this.densityMeasured = densityMeasured;
-		this.stability=stability;
-		this.u = u;
-		this.t = t;
-	}
-
-	private double calculateDistance(PGPuffModel lm) {
-		int sensorNum = densityMeasured.length;
-		double[] densityCalculating = new double[sensorNum];
-		double dist = 0;
-		for (int i = 0; i < sensorNum; i++) {
-			densityCalculating[i] = lm.getDensity(densityMeasured[i][0],
-					densityMeasured[i][1], densityMeasured[i][2]);
-			dist += Math.pow(densityCalculating[i] - densityMeasured[i][3], 2);
+	private static int[] randomCommon(int min, int max, int n) {
+		if (n > (max - min + 1) || max < min) {
+			return null;
 		}
-		return dist;
-	}  
-	
-	private double[][] crossover(double[][] chromosomes) {
-		int halfCrossNum=(int)Math.floor((sizePopulation*crossOverRate/2));
-		int[] randomIndex = randomCommon(0,sizePopulation-1,halfCrossNum*2);
-		double[][] crossResult=new double[halfCrossNum][5];
-		for (int i = 0; i < halfCrossNum; i++) {
-			crossResult[i][0]=(chromosomes[randomIndex[i]][0]+chromosomes[randomIndex[i+halfCrossNum]][0])/2;
-			crossResult[i][1]=(chromosomes[randomIndex[i]][1]+chromosomes[randomIndex[i+halfCrossNum]][1])/2;
-			crossResult[i][2]=(chromosomes[randomIndex[i]][2]+chromosomes[randomIndex[i+halfCrossNum]][2])/2;
-			crossResult[i][3]=(chromosomes[randomIndex[i]][3]+chromosomes[randomIndex[i+halfCrossNum]][3])/2;
-			crossResult[i][4]=calculateDistance(new PGPuffModel(crossResult[i][0],
-					crossResult[i][1], crossResult[i][2], crossResult[i][3], stability, u, t));
+		int[] result = new int[n];
+		int count = 0;
+		while (count < n) {
+			int num = (int) (Math.random() * (max - min)) + min;
+			boolean flag = true;
+			for (int j = 0; j < n; j++) {
+				if (num == result[j]) {
+					flag = false;
+					break;
+				}
+			}
+			if (flag) {
+				result[count] = num;
+				count++;
+			}
 		}
-		int len=chromosomes.length;
-		for (int i = 0; i < halfCrossNum; i++) {
-			chromosomes[len-1-i]=crossResult[i];
-		}
-		return ordering(chromosomes);
-	}
-	
-	private double[] GAProcess(double[][] chromosomes) {
-		int generationNumber = 0;
-		while (!terminationTest(chromosomes[0][3]) & generationNumber<generationBound) {
-			chromosomes = crossover(chromosomes);
-			chromosomes = mutation(chromosomes);
-			chromosomes = ordering(chromosomes);
-			generationNumber++;
-		}
-		System.out.println("Number of generations : "+Integer.toString(generationNumber));
-		
-		double[] bestIndividual=chromosomes[0];
-		return bestIndividual;
-	}
-
-	public double[] GASolve() {
-		double[][] chromosomes = initialGA();
-		double[] finalResult = GAProcess(chromosomes);
-		return finalResult;
+		return result;
 	}
 
 	public double getCrossOverRate() {
@@ -110,7 +54,7 @@ public class GAPuffSolver {
 	public int getGenerationBound() {
 		return generationBound;
 	}
-	
+
 	public double getMaxQ0() {
 		return maxQ0;
 	}
@@ -142,7 +86,7 @@ public class GAPuffSolver {
 	public int getSizePopulation() {
 		return sizePopulation;
 	}
-	
+
 	public int getStability() {
 		return stability;
 	}
@@ -150,84 +94,137 @@ public class GAPuffSolver {
 	public void setStability(int stability) {
 		this.stability = stability;
 	}
-	
+
 	public double getStopE() {
 		return stopE;
 	}
-	private double[][] initialGA() {
-		if (sizePopulation<10) sizePopulation=10;
-		double[][] chromosomes= new double[sizePopulation][5];
-		for (int i = 0; i < sizePopulation; i++) { 
-			chromosomes[i][0]=Math.random()*(maxQ0-minQ0)+minQ0;
-			chromosomes[i][1]=Math.random()*(maxX0-minX0)+minX0;
-			chromosomes[i][2]=Math.random()*(maxY0-minY0)+minY0;
-			chromosomes[i][3]=Math.random()*(maxZ0-minZ0)+minZ0;
-			chromosomes[i][4]=calculateDistance(new PGPuffModel(chromosomes[i][0],
-					chromosomes[i][1], chromosomes[i][2], chromosomes[i][3], stability, u, t));
-		}
-		return ordering(chromosomes);
+
+	public GAPuffSolver(List<Sensor> sensors, int stability, double u) {
+		this.sensors = sensors;
+		this.stability = stability;
+		this.u = u;
 	}
-	private double[][] mutation(double[][] chromosomes) {
+
+	@SuppressWarnings("unchecked")
+	private List<PuffChromosome> crossover(List<PuffChromosome> puffChromosomes) {
+		int halfCrossNum = (int) Math
+				.floor((sizePopulation * crossOverRate / 2));
+		int[] randomIndex = randomCommon(0, sizePopulation - 1,
+				halfCrossNum * 2);
+		List<PuffChromosome> puffChromosomeAfterCrossOver = new ArrayList<PuffChromosome>();
+		PuffChromosome puffChromosome;
+		for (int i = 0; i < halfCrossNum; i++) {
+			puffChromosome=new PuffChromosome((puffChromosomes.get(randomIndex[i]).getQ0() + puffChromosomes
+							.get(randomIndex[i + halfCrossNum]).getQ0()) / 2, (puffChromosomes.get(randomIndex[i]).getX0() + puffChromosomes
+									.get(randomIndex[i + halfCrossNum]).getX0()) / 2,(puffChromosomes.get(randomIndex[i]).getY0() + puffChromosomes
+											.get(randomIndex[i + halfCrossNum]).getY0()) / 2,(puffChromosomes.get(randomIndex[i]).getZ0() + puffChromosomes
+													.get(randomIndex[i + halfCrossNum]).getZ0()) / 2,sensors, stability, u);
+			puffChromosomeAfterCrossOver.add(puffChromosome);
+		}
+
+		int len = puffChromosomes.size();
+		puffChromosomes = puffChromosomes.subList(0, len - halfCrossNum);
+		puffChromosomes.addAll(puffChromosomeAfterCrossOver);
+		Collections.sort(puffChromosomes, new FitnessComparator());
+		return puffChromosomes;
+	}
+
+	private PuffChromosome GAProcess(List<PuffChromosome> puffChromosomes) {
+		int generationNumber = 0;
+		while (!terminationTest(puffChromosomes.get(0).getFitness()) & generationNumber < generationBound) {
+			puffChromosomes = crossover(puffChromosomes);
+			puffChromosomes = mutation(puffChromosomes);
+			generationNumber++;
+		}
+		System.out.println("Number of generations : "
+				+ Integer.toString(generationNumber));
+
+		return puffChromosomes.get(0);
+	}
+
+	public PuffChromosome GASolve() {
+		List<PuffChromosome> puffChromosomes = initialGA();
+		PuffChromosome finalResult = GAProcess(puffChromosomes);
+		return finalResult;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<PuffChromosome> initialGA() {
+		if (sizePopulation < 10)
+			sizePopulation = 10;
+		List<PuffChromosome> puffChromosomes = new ArrayList<PuffChromosome>();
+		for (int i = 0; i < sizePopulation; i++) {
+			puffChromosomes
+					.add(new PuffChromosome(Math.random() * (maxQ0 - minQ0)
+							+ minQ0, Math.random() * (maxX0 - minX0) + minX0,
+							Math.random() * (maxY0 - minY0) + minY0, Math
+									.random() * (maxZ0 - minZ0) + minZ0,
+							sensors, stability, u));
+		}
+		Collections.sort(puffChromosomes, new FitnessComparator());
+		return puffChromosomes;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<PuffChromosome> mutation(List<PuffChromosome> puffChromosomes) {
 		int mutationNum = (int) Math.floor((sizePopulation * mutationRate));
 		int[] randomIndex = randomCommon(0, sizePopulation - 1, mutationNum);
-		double[][] mutationResult = new double[mutationNum][5];
 		for (int i = 0; i < mutationNum; i++) {
-			mutationResult[i] = chromosomes[randomIndex[i]];
 			int j = new Random().nextInt(4);
 			switch (j) {
 			case 0:
-				mutationResult[i][0] = Math.random() * (maxQ0 - minQ0) + minQ0;
+				puffChromosomes.get(randomIndex[i]).setQ0(
+						Math.random() * (maxQ0 - minQ0) + minQ0);
 				break;
 			case 1:
-				mutationResult[i][1] = Math.random() * (maxX0 - minX0) + minX0;
+				puffChromosomes.get(randomIndex[i]).setX0(
+						Math.random() * (maxX0 - minX0) + minX0);
 				break;
 			case 2:
-				mutationResult[i][2] = Math.random() * (maxY0 - minY0) + minY0;
+				puffChromosomes.get(randomIndex[i]).setY0(
+						Math.random() * (maxY0 - minY0) + minY0);
 				break;
 			case 3:
-				mutationResult[i][3] = Math.random() * (maxZ0 - minZ0) + minZ0;
-				break;	
+				puffChromosomes.get(randomIndex[i]).setZ0(
+						Math.random() * (maxZ0 - minZ0) + minZ0);
+				break;
 			}
-			mutationResult[i][4]=calculateDistance(new PGPuffModel(mutationResult[i][0],
-					mutationResult[i][1], mutationResult[i][2], mutationResult[i][3], stability, u, t));
+			puffChromosomes.get(randomIndex[i]).setFitness(sensors, stability,
+					u);
 		}
-		int len=chromosomes.length;
-		for (int i = 0; i < mutationNum; i++) {
-			chromosomes[len-1-i]=mutationResult[i];
-		}
-		return ordering(chromosomes);
+		Collections.sort(puffChromosomes, new FitnessComparator());
+		return puffChromosomes;
 	}
-	private double[][] ordering(double[][] chromosomes) {
-		int len=chromosomes.length;
-		double[] temp;
-		for (int i = 0; i < len; i++) {
-			for (int j = i + 1; j <= len - 1; j++) {
-				if (chromosomes[i][4] > chromosomes[j][4]) {
-					temp = chromosomes[i];
-					chromosomes[i] = chromosomes[j];
-					chromosomes[j] = temp;
-				}
-			}
+
+	@SuppressWarnings("rawtypes")
+	static class FitnessComparator implements Comparator {
+		public int compare(Object object1, Object object2) {
+			PuffChromosome p1 = (PuffChromosome) object1;
+			PuffChromosome p2 = (PuffChromosome) object2;
+			return p1.compareTo(p2);
 		}
-		return chromosomes;
 	}
 
 	public void setCrossOverRate(double crossOverRate) {
 		this.crossOverRate = crossOverRate;
 	}
-	
+
 	public void setGenerationBound(int generationBound) {
 		this.generationBound = generationBound;
 	}
+
 	public void setMaxQ0(double maxQ0) {
 		this.maxQ0 = maxQ0;
 	}
+
 	public void setMaxX0(double maxX0) {
 		this.maxX0 = maxX0;
 	}
+
 	public void setMaxY0(double maxY0) {
 		this.maxY0 = maxY0;
 	}
+
 	public void setMinQ0(double minQ0) {
 		this.minQ0 = minQ0;
 	}
@@ -251,7 +248,7 @@ public class GAPuffSolver {
 	public void setStopE(double stopE) {
 		this.stopE = stopE;
 	}
-	
+
 	public double getMaxZ0() {
 		return maxZ0;
 	}
@@ -269,6 +266,14 @@ public class GAPuffSolver {
 	}
 
 	private double minZ0;
+
+	public List<Sensor> getSensors() {
+		return sensors;
+	}
+
+	public void setSensors(List<Sensor> sensors) {
+		this.sensors = sensors;
+	}
 
 	private boolean terminationTest(double bestF) {
 		if (bestF < stopE) {

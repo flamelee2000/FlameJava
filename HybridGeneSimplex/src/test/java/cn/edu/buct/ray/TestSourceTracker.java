@@ -1,6 +1,9 @@
 package cn.edu.buct.ray;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Test;
 
 public class TestSourceTracker {
@@ -55,22 +58,21 @@ public class TestSourceTracker {
 	
 	@Test
 	public void testPuff() {
-		double[][] densityMeasured0 = {
-				{ 240.0, 5.0, 7.0, 1.3973524992114676E-6 },
-				{ 242.0, 10.0, 8.0, 0.016496183881397203 },
-				{ 244.0, 20.0, 8.0, 0.12850539585529266 },
-				{ 246.0, 23.0, 7.0, 0.010801270184006841 },
-				{ 248.0, 24.0, 7.0, 0.008325615992713233 },
-				{ 250.0, 25.0, 8.0, 0.010805215466748182 },
-				{ 252.0, 24.0, 8.0, 0.03186941573489162 },
-				{ 254.0, 20.0, 8.0, 0.6097915506435226 },
-				{ 256.0, 22.0, 7.0, 0.011527078292930565 },
-				{ 258.0, 10.0, 7.0, 0.00964466107343539 } };
-		double[] result = new double[] { 5000, 35, 8, 5, 0 };
-
+		List<Sensor> sensors = new ArrayList<Sensor>();
+		sensors.add(new Sensor(240.0, 5.0, 7.0, 100, 1.3973524992114676E-6));
+		sensors.add(new Sensor(242.0, 10.0, 8.0, 100, 0.016496183881397203));
+		sensors.add(new Sensor(244.0, 20.0, 8.0, 100, 0.12850539585529266));
+		sensors.add(new Sensor(246.0, 23.0, 7.0, 100, 0.010801270184006841));
+		sensors.add(new Sensor(248.0, 24.0, 7.0, 100, 0.008325615992713233));
+		sensors.add(new Sensor(250.0, 25.0, 8.0, 100, 0.010805215466748182));
+		sensors.add(new Sensor(252.0, 24.0, 8.0, 100, 0.03186941573489162));
+		sensors.add(new Sensor(254.0, 20.0, 8.0, 100, 0.6097915506435226));
+		sensors.add(new Sensor(256.0, 22.0, 7.0, 100, 0.011527078292930565));
+		sensors.add(new Sensor(258.0, 10.0, 7.0, 100, 0.00964466107343539));
+		PuffChromosome finalPuffChromosome = new PuffChromosome(5000, 35, 8, 5, sensors, 5, 2);
 		long startTime = System.currentTimeMillis();
 		System.out.println("Performing genetic algorithm ...");
-		GAPuffSolver gs = new GAPuffSolver(densityMeasured0, 5, 2, 100);
+		GAPuffSolver gs = new GAPuffSolver(sensors, 5, 2);
 		gs.setMinQ0(20.0);
 		gs.setMaxQ0(8000.0);
 		gs.setMinX0(5.0);
@@ -82,11 +84,11 @@ public class TestSourceTracker {
 		gs.setStopE(1E-6);
 		gs.setCrossOverRate(0.9);
 		gs.setMutationRate(0.02);
-		gs.setSizePopulation(400);
+		gs.setSizePopulation(300);
 		gs.setGenerationBound(200);
-		result = gs.GASolve();
-		System.out.println("Result: " + Arrays.toString(result));
-		System.out.println("Applying Nelder Mead simplex method ...");
+		finalPuffChromosome = gs.GASolve();
+		System.out.println("Result: " + finalPuffChromosome.toString());
+		/*System.out.println("Applying Nelder Mead simplex method ...");
 		NelderMeadPuffSolver nms = new NelderMeadPuffSolver(densityMeasured0,
 				result[0], result[1], result[2], result[3], 5, 2, 100);
 		double[] h1 = { 90, 10, 3, 2 };
@@ -98,7 +100,7 @@ public class TestSourceTracker {
 		nms.setStopE(1E-9);
 		nms.setMaxiIterationsNumber(9999);
 		result = nms.NelderMeadSolve();
-		System.out.println("Result: " + Arrays.toString(result));
+		System.out.println("Result: " + Arrays.toString(result));*/
 		long timeConsumed = System.currentTimeMillis() - startTime;
 		System.out.println("time consumed:" + Long.toString(timeConsumed, 10)
 				+ " (ms)");
