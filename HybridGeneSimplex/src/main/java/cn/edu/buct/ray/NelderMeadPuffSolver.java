@@ -101,14 +101,15 @@ public class NelderMeadPuffSolver {
 
 		int len = puffChromosomes.size();
 		double[] sum = { 0, 0, 0, 0 };
-		for (int i = 0; i < puffChromosomes.size(); i++) {
+		for (int i = 0; i < len-1; i++) {
 			sum[0] += puffChromosomes.get(i).getQ0();
 			sum[1] += puffChromosomes.get(i).getX0();
 			sum[2] += puffChromosomes.get(i).getY0();
 			sum[3] += puffChromosomes.get(i).getZ0();
 		}
-		return new PuffChromosome(sum[0] / len, sum[1] / len, sum[2] / len,
-				sum[3] / len, sensors, stability, u);
+		
+		return new PuffChromosome(sum[0] / (len-1), sum[1] / (len-1), sum[2] / (len-1),
+				sum[3] / (len-1), sensors, stability, u);
 	}
 
 	private List<PuffChromosome> contract(List<PuffChromosome> puffChromosomes,
@@ -188,17 +189,14 @@ public class NelderMeadPuffSolver {
 		PuffChromosome pr = new PuffChromosome(qr, xr, yr, zr, sensors,
 				stability, u);
 		double fr = pr.getFitness();
-
 		double qe, xe, ye, ze;
 		PuffChromosome pe;
 
 		if (fl > fr) {
-
 			qe = centroid.getQ0() + gama * (qr - centroid.getQ0());
 			xe = centroid.getX0() + gama * (xr - centroid.getX0());
 			ye = centroid.getY0() + gama * (yr - centroid.getY0());
 			ze = centroid.getZ0() + gama * (zr - centroid.getZ0());
-
 			pe = new PuffChromosome(qe, xe, ye, ze, sensors, stability, u);
 			double fe = pe.getFitness();
 
@@ -238,6 +236,8 @@ public class NelderMeadPuffSolver {
 	private List<PuffChromosome> initialSimplex() {
 
 		List<PuffChromosome> puffChromosomes = new ArrayList<PuffChromosome>();
+		puffChromosomes.add(new PuffChromosome(Q0, x0, y0, z0, sensors,
+				stability, u));
 		puffChromosomes.add(new PuffChromosome(Q0 + h[0], x0, y0, z0, sensors,
 				stability, u));
 		puffChromosomes.add(new PuffChromosome(Q0, x0 + h[1], y0, z0, sensors,
@@ -262,16 +262,12 @@ public class NelderMeadPuffSolver {
 		double z = centroid.getZ0() + alfa
 				* (centroid.getZ0() - puffChromosomes.get(len - 1).getZ0());
 		double fl = puffChromosomes.get(0).getFitness();
-		double fr = new PuffChromosome(q, x, y, z, sensors, stability, u)
-				.getFitness();
+		PuffChromosome pr = new PuffChromosome(q, x, y, z, sensors, stability, u);
+		double fr = pr.getFitness();
 		double fs = puffChromosomes.get(len - 2).getFitness();
 		if ((fl <= fr) && (fr < fs)) {
 			flag = true;
-			puffChromosomes.get(len - 1).setQ0(q);
-			puffChromosomes.get(len - 1).setX0(x);
-			puffChromosomes.get(len - 1).setX0(y);
-			puffChromosomes.get(len - 1).setX0(z);
-			puffChromosomes.get(len - 1).setFitness(sensors, stability, u);
+			puffChromosomes.set(len - 1, pr);
 		}
 		return puffChromosomes;
 	}
@@ -320,10 +316,10 @@ public class NelderMeadPuffSolver {
 		int len = puffChromosomes.size();
 		PuffChromosome puffChromosome;
 		for (int i = 1; i < len; i++) {
-			puffChromosome=new PuffChromosome(puffChromosomes.get(i).getQ0() + delta * (puffChromosomes.get(i).getQ0() - puffChromosomes.get(0).getQ0()),
-					puffChromosomes.get(i).getX0() + delta * (puffChromosomes.get(i).getX0() - puffChromosomes.get(0).getX0()),
-					puffChromosomes.get(i).getY0() + delta * (puffChromosomes.get(i).getY0() - puffChromosomes.get(0).getY0()),
-					puffChromosomes.get(i).getZ0() + delta * (puffChromosomes.get(i).getZ0() - puffChromosomes.get(0).getZ0()),
+			puffChromosome=new PuffChromosome(puffChromosomes.get(0).getQ0() + delta * (puffChromosomes.get(i).getQ0() - puffChromosomes.get(0).getQ0()),
+					puffChromosomes.get(0).getX0() + delta * (puffChromosomes.get(i).getX0() - puffChromosomes.get(0).getX0()),
+					puffChromosomes.get(0).getY0() + delta * (puffChromosomes.get(i).getY0() - puffChromosomes.get(0).getY0()),
+					puffChromosomes.get(0).getZ0() + delta * (puffChromosomes.get(i).getZ0() - puffChromosomes.get(0).getZ0()),
 					sensors, stability, u);
 			puffChromosomes.set(i, puffChromosome);
 		}
