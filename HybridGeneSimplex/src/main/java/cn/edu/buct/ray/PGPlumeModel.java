@@ -3,7 +3,7 @@ package cn.edu.buct.ray;
 public class PGPlumeModel {
 	
 	private int stability;
-	private int uiCondition;
+	private int urCondition;
 	private double Q0;
 	private double y0;
 	private double z0;
@@ -34,12 +34,12 @@ public class PGPlumeModel {
 	}
 
 
-	public int getUiCondition() {
-		return uiCondition;
+	public int getUrCondition() {
+		return urCondition;
 	}
 
-	public void setUiCondition(int uiCondition) {
-		this.uiCondition = uiCondition;
+	public void setUrCondition(int urCondition) {
+		this.urCondition = urCondition;
 	}
 	
 	public double getQ0() {
@@ -80,7 +80,7 @@ public class PGPlumeModel {
 
 	private double getDiffCoefficientY(double y) {
 		double sigma = 0;
-		if (uiCondition == 0) {
+		if (urCondition == 0) {
 			switch (stability) {
 			case 0:
 				sigma = 0.22 * y * Math.pow(1 + 0.0001 * y, -0.5);
@@ -128,7 +128,7 @@ public class PGPlumeModel {
 
 	private double getDiffCoefficientZ(double z) {
 		double sigma = 0;
-		if (uiCondition == 0) {
+		if (urCondition == 0) {
 			switch (stability) {
 			case 0:
 				sigma = 0.2 * z;

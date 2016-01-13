@@ -1,11 +1,15 @@
 package cn.edu.buct.ray;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Random;
 
 public class GAPlumeSolver {
 
 	private double crossOverRate;
-	private double[][] densityMeasured;
+	private List<Sensor> sensors;
 	private int generationBound;
 	private double maxQ0;
 	private double maxY0;
@@ -17,6 +21,7 @@ public class GAPlumeSolver {
 	private double stopE;
 	private int stability;
 	private int urCondition;
+
 	private double u;
 
 	private static int[] randomCommon(int min, int max, int n) {
@@ -40,72 +45,6 @@ public class GAPlumeSolver {
 			}
 		}
 		return result;
-	}
-
-	public GAPlumeSolver(double[][] densityMeasured, int stability,
-			int urCondition, double u) {
-		this.densityMeasured = densityMeasured;
-		this.stability = stability;
-		this.urCondition = urCondition;
-		this.u = u;
-	}
-
-	private double calculateDistance(PGPlumeModel lm) {
-		int sensorNum = densityMeasured.length;
-		double[] densityCalculating = new double[sensorNum];
-		double dist = 0;
-		for (int i = 0; i < sensorNum; i++) {
-			densityCalculating[i] = lm.getDensity(densityMeasured[i][0],
-					densityMeasured[i][1], densityMeasured[i][2]);
-			dist += Math.pow(densityCalculating[i] - densityMeasured[i][3], 2);
-		}
-		return dist;
-	}
-
-	private double[][] crossover(double[][] chromosomes) {
-		int halfCrossNum = (int) Math
-				.floor((sizePopulation * crossOverRate / 2));
-		int[] randomIndex = randomCommon(0, sizePopulation - 1,
-				halfCrossNum * 2);
-		double[][] crossResult = new double[halfCrossNum][4];
-		for (int i = 0; i < halfCrossNum; i++) {
-			crossResult[i][0] = (chromosomes[randomIndex[i]][0] + chromosomes[randomIndex[i
-					+ halfCrossNum]][0]) / 2;
-			crossResult[i][1] = (chromosomes[randomIndex[i]][1] + chromosomes[randomIndex[i
-					+ halfCrossNum]][1]) / 2;
-			crossResult[i][2] = (chromosomes[randomIndex[i]][2] + chromosomes[randomIndex[i
-					+ halfCrossNum]][2]) / 2;
-			crossResult[i][3] = calculateDistance(new PGPlumeModel(
-					crossResult[i][0], crossResult[i][1], crossResult[i][2],
-					stability, urCondition, u));
-		}
-		int len = chromosomes.length;
-		for (int i = 0; i < halfCrossNum; i++) {
-			chromosomes[len - 1 - i] = crossResult[i];
-		}
-		return ordering(chromosomes);
-	}
-
-	private double[] GAProcess(double[][] chromosomes) {
-		int generationNumber = 0;
-		while (!terminationTest(chromosomes[0][3])
-				& generationNumber < generationBound) {
-			chromosomes = crossover(chromosomes);
-			chromosomes = mutation(chromosomes);
-			chromosomes = ordering(chromosomes);
-			generationNumber++;
-		}
-		System.out.println("Number of generations : "
-				+ Integer.toString(generationNumber));
-
-		double[] bestIndividual = chromosomes[0];
-		return bestIndividual;
-	}
-
-	public double[] GASolve() {
-		double[][] chromosomes = initialGA();
-		double[] finalResult = GAProcess(chromosomes);
-		return finalResult;
 	}
 
 	public double getCrossOverRate() {
@@ -152,63 +91,108 @@ public class GAPlumeSolver {
 		return stopE;
 	}
 
-	private double[][] initialGA() {
-		if (sizePopulation < 10)
-			sizePopulation = 10;
-		double[][] chromosomes = new double[sizePopulation][4];
-		for (int i = 0; i < sizePopulation; i++) {
-			chromosomes[i][0] = Math.random() * (maxQ0 - minQ0) + minQ0;
-			chromosomes[i][1] = Math.random() * (maxY0 - minY0) + minY0;
-			chromosomes[i][2] = Math.random() * (maxZ0 - minZ0) + minZ0;
-			chromosomes[i][3] = calculateDistance(new PGPlumeModel(
-					chromosomes[i][0], chromosomes[i][1], chromosomes[i][2],
-					stability, urCondition, u));
-		}
-		return ordering(chromosomes);
+	public GAPlumeSolver(List<Sensor> sensors, int stability, int urCondition, double u) {
+		this.sensors = sensors;
+		this.stability = stability;
+		this.urCondition = urCondition;
+		this.u = u;
 	}
 
-	private double[][] mutation(double[][] chromosomes) {
+	@SuppressWarnings("unchecked")
+	private List<PlumeChromosome> crossover(List<PlumeChromosome> plumeChromosomes) {
+		int halfCrossNum = (int) Math
+				.floor((sizePopulation * crossOverRate / 2));
+		int[] randomIndex = randomCommon(0, sizePopulation - 1,
+				halfCrossNum * 2);
+		List<PlumeChromosome> plumeChromosomeAfterCrossOver = new ArrayList<PlumeChromosome>();
+		PlumeChromosome plumeChromosome;
+		for (int i = 0; i < halfCrossNum; i++) {
+			double c=Math.random();
+			double d=1-c;
+			plumeChromosome=new PlumeChromosome(plumeChromosomes.get(randomIndex[i]).getQ0()*c + plumeChromosomes
+							.get(randomIndex[i + halfCrossNum]).getQ0()*d, plumeChromosomes.get(randomIndex[i]).getY0()*c+ plumeChromosomes
+											.get(randomIndex[i + halfCrossNum]).getY0()*d,plumeChromosomes.get(randomIndex[i]).getZ0()*c + plumeChromosomes
+													.get(randomIndex[i + halfCrossNum]).getZ0()*d,sensors, stability, urCondition, u);
+			plumeChromosomeAfterCrossOver.add(plumeChromosome);
+		}
+
+		int len = plumeChromosomes.size();
+		plumeChromosomes = plumeChromosomes.subList(0, len - halfCrossNum);
+		plumeChromosomes.addAll(plumeChromosomeAfterCrossOver);
+		Collections.sort(plumeChromosomes, new FitnessComparator());
+		return plumeChromosomes;
+	}
+
+	private PlumeChromosome GAProcess(List<PlumeChromosome> plumeChromosomes) {
+		int generationNumber = 0;
+		while (!terminationTest(plumeChromosomes.get(0).getFitness()) & generationNumber < generationBound) {
+			plumeChromosomes = crossover(plumeChromosomes);
+			plumeChromosomes = mutation(plumeChromosomes);
+			generationNumber++;
+		}
+		System.out.println("Number of generations : "
+				+ Integer.toString(generationNumber));
+
+		return plumeChromosomes.get(0);
+	}
+
+	public PlumeChromosome GASolve() {
+		List<PlumeChromosome> plumeChromosomes = initialGA();
+		PlumeChromosome finalResult = GAProcess(plumeChromosomes);
+		return finalResult;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<PlumeChromosome> initialGA() {
+		if (sizePopulation < 10)
+			sizePopulation = 10;
+		List<PlumeChromosome> plumeChromosomes = new ArrayList<PlumeChromosome>();
+		for (int i = 0; i < sizePopulation; i++) {
+			plumeChromosomes
+					.add(new PlumeChromosome(Math.random() * (maxQ0 - minQ0)
+							+ minQ0, 
+							Math.random() * (maxY0 - minY0) + minY0, Math
+									.random() * (maxZ0 - minZ0) + minZ0,
+							sensors, stability, urCondition, u));
+		}
+		Collections.sort(plumeChromosomes, new FitnessComparator());
+		return plumeChromosomes;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<PlumeChromosome> mutation(List<PlumeChromosome> plumeChromosomes) {
 		int mutationNum = (int) Math.floor((sizePopulation * mutationRate));
 		int[] randomIndex = randomCommon(0, sizePopulation - 1, mutationNum);
-		double[][] mutationResult = new double[mutationNum][4];
 		for (int i = 0; i < mutationNum; i++) {
-			mutationResult[i] = chromosomes[randomIndex[i]];
 			int j = new Random().nextInt(3);
 			switch (j) {
 			case 0:
-				mutationResult[i][0] = Math.random() * (maxQ0 - minQ0) + minQ0;
+				plumeChromosomes.get(randomIndex[i]).setQ0(
+						Math.random() * (maxQ0 - minQ0) + minQ0);
 				break;
 			case 1:
-				mutationResult[i][1] = Math.random() * (maxY0 - minY0) + minY0;
+				plumeChromosomes.get(randomIndex[i]).setY0(
+						Math.random() * (maxY0 - minY0) + minY0);
 				break;
 			case 2:
-				mutationResult[i][2] = Math.random() * (maxZ0 - minZ0) + minZ0;
+				plumeChromosomes.get(randomIndex[i]).setZ0(
+						Math.random() * (maxZ0 - minZ0) + minZ0);
 				break;
 			}
-			mutationResult[i][3] = calculateDistance(new PGPlumeModel(
-					mutationResult[i][0], mutationResult[i][1],
-					mutationResult[i][2], stability, urCondition, u));
+			plumeChromosomes.get(randomIndex[i]).setFitness(sensors, stability, urCondition,
+					u);
 		}
-		int len = chromosomes.length;
-		for (int i = 0; i < mutationNum; i++) {
-			chromosomes[len - 1 - i] = mutationResult[i];
-		}
-		return ordering(chromosomes);
+		Collections.sort(plumeChromosomes, new FitnessComparator());
+		return plumeChromosomes;
 	}
 
-	private double[][] ordering(double[][] chromosomes) {
-		int len = chromosomes.length;
-		double[] temp;
-		for (int i = 0; i < len; i++) {
-			for (int j = i + 1; j <= len - 1; j++) {
-				if (chromosomes[i][3] > chromosomes[j][3]) {
-					temp = chromosomes[i];
-					chromosomes[i] = chromosomes[j];
-					chromosomes[j] = temp;
-				}
-			}
+	@SuppressWarnings("rawtypes")
+	static class FitnessComparator implements Comparator {
+		public int compare(Object object1, Object object2) {
+			PlumeChromosome p1 = (PlumeChromosome) object1;
+			PlumeChromosome p2 = (PlumeChromosome) object2;
+			return p1.compareTo(p2);
 		}
-		return chromosomes;
 	}
 
 	public void setCrossOverRate(double crossOverRate) {
@@ -243,14 +227,6 @@ public class GAPlumeSolver {
 		this.sizePopulation = sizePopulation;
 	}
 
-	public int getUrCondition() {
-		return urCondition;
-	}
-
-	public void setUrCondition(int urCondition) {
-		this.urCondition = urCondition;
-	}
-
 	public void setStopE(double stopE) {
 		this.stopE = stopE;
 	}
@@ -272,6 +248,22 @@ public class GAPlumeSolver {
 	}
 
 	private double minZ0;
+
+	public List<Sensor> getSensors() {
+		return sensors;
+	}
+
+	public void setSensors(List<Sensor> sensors) {
+		this.sensors = sensors;
+	}
+	public int getUrCondition() {
+		return urCondition;
+	}
+
+	public void setUrCondition(int urCondition) {
+		this.urCondition = urCondition;
+	}
+
 
 	private boolean terminationTest(double bestF) {
 		if (bestF < stopE) {

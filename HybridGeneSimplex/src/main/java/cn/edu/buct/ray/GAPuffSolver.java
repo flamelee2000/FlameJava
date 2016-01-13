@@ -114,11 +114,13 @@ public class GAPuffSolver {
 		List<PuffChromosome> puffChromosomeAfterCrossOver = new ArrayList<PuffChromosome>();
 		PuffChromosome puffChromosome;
 		for (int i = 0; i < halfCrossNum; i++) {
-			puffChromosome=new PuffChromosome((puffChromosomes.get(randomIndex[i]).getQ0() + puffChromosomes
-							.get(randomIndex[i + halfCrossNum]).getQ0()) / 2, (puffChromosomes.get(randomIndex[i]).getX0() + puffChromosomes
-									.get(randomIndex[i + halfCrossNum]).getX0()) / 2,(puffChromosomes.get(randomIndex[i]).getY0() + puffChromosomes
-											.get(randomIndex[i + halfCrossNum]).getY0()) / 2,(puffChromosomes.get(randomIndex[i]).getZ0() + puffChromosomes
-													.get(randomIndex[i + halfCrossNum]).getZ0()) / 2,sensors, stability, u);
+			double c=Math.random();
+			double d=1-c;
+			puffChromosome=new PuffChromosome(puffChromosomes.get(randomIndex[i]).getQ0()*c + puffChromosomes
+							.get(randomIndex[i + halfCrossNum]).getQ0()*d, puffChromosomes.get(randomIndex[i]).getX0()*c + puffChromosomes
+									.get(randomIndex[i + halfCrossNum]).getX0()*d,puffChromosomes.get(randomIndex[i]).getY0()*c+ puffChromosomes
+											.get(randomIndex[i + halfCrossNum]).getY0()*d,puffChromosomes.get(randomIndex[i]).getZ0()*c + puffChromosomes
+													.get(randomIndex[i + halfCrossNum]).getZ0()*d,sensors, stability, u);
 			puffChromosomeAfterCrossOver.add(puffChromosome);
 		}
 
