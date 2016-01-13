@@ -1,5 +1,11 @@
 package cn.edu.buct.ray;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import cn.edu.buct.ray.GAPuffSolver.FitnessComparator;
+
 public class NelderMeadPuffSolver {
 
 	private double stopE;
@@ -10,17 +16,23 @@ public class NelderMeadPuffSolver {
 
 	private double delta;
 
-	private double[][] densityMeasured;
+	private List<Sensor> sensors;
 
 	private double gama;
 
 	private double[] h;
 
 	private double Q0;
-	
+
 	private int stability;
 
-	private double t;
+	public List<Sensor> getSensors() {
+		return sensors;
+	}
+
+	public void setSensors(List<Sensor> sensors) {
+		this.sensors = sensors;
+	}
 
 	private double u;
 
@@ -34,162 +46,8 @@ public class NelderMeadPuffSolver {
 
 	private int maxiIterationsNumber;
 
-	public NelderMeadPuffSolver(double[][] densityMeasured, double Q0, double x0,
-			double y0, double z0, int stability, double u, double t) {
-		this.densityMeasured = densityMeasured;
-		this.Q0 = Q0;
-		this.x0 = x0;
-		this.y0 = y0;
-		this.z0 = z0;
-		this.stability=stability;
-		this.u = u;
-		this.t = t;
-	}
-
-	private double[] calCentroid(double[][] vs1) {
-		int len = vs1.length;
-		double[] sum = { 0, 0, 0,0 };
-		double[] avg = { 0, 0, 0,0 };
-		for (int i = 0; i < len - 1; i++) {
-			sum[0] += vs1[i][0];
-			sum[1] += vs1[i][1];
-			sum[2] += vs1[i][2];
-			sum[3] += vs1[i][3];
-		}
-		avg[0] = sum[0] / (len - 1);
-		avg[1] = sum[1] / (len - 1);
-		avg[2] = sum[2] / (len - 1);
-		avg[3] = sum[3] / (len - 1);
-		return avg;
-	}
-
-	private double calculateDistance(PGPuffModel lm) {
-		int sensorNum = densityMeasured.length;
-		double[] densityCalculating = new double[sensorNum];
-		double dist = 0;
-		for (int i = 0; i < sensorNum; i++) {
-			densityCalculating[i] = lm.getDensity(densityMeasured[i][0],
-					densityMeasured[i][1], densityMeasured[i][2]);
-			dist += Math.pow(densityCalculating[i] - densityMeasured[i][3], 2);
-		}
-		return dist;
-	}
-
-	private double[][] contract(double[][] vs, double[] centroid) {
-		int len = vs.length;
-		double[] xr = new double[4];
-		double[] xc = new double[4];
-		xr[0] = centroid[0] + alfa * (centroid[0] - vs[len - 1][0]);
-		xr[1] = centroid[1] + alfa * (centroid[1] - vs[len - 1][1]);
-		xr[2] = centroid[2] + alfa * (centroid[2] - vs[len - 1][2]);
-		xr[3] = centroid[3] + alfa * (centroid[3] - vs[len - 1][3]);
-		double fr = calculateDistance(new PGPuffModel(xr[0], xr[1], xr[2], xr[3], stability,
-				u, t));
-		double fs = calculateDistance(new PGPuffModel(vs[len - 2][0],
-				vs[len - 2][1], vs[len - 2][2], vs[len - 2][3],stability, u, t));
-		double fh = calculateDistance(new PGPuffModel(vs[len - 1][0],
-				vs[len - 1][1], vs[len - 1][2], vs[len - 1][3],stability, u, t));
-		double fc;
-		if (fr >= fs) {
-			if (fr < fh) {
-				xc[0] = centroid[0] + beta * (xr[0] - centroid[0]);
-				xc[1] = centroid[1] + beta * (xr[1] - centroid[1]);
-				xc[2] = centroid[2] + beta * (xr[2] - centroid[2]);
-				xc[3] = centroid[3] + beta * (xr[3] - centroid[3]);
-				fc = calculateDistance(new PGPuffModel(xc[0], xc[1], xc[2],
-						xc[3], stability, u, t));
-				if (fc > fr)
-					return vs;
-			} else {
-				xc[0] = centroid[0] + beta * (vs[len - 1][0] - centroid[0]);
-				xc[1] = centroid[1] + beta * (vs[len - 1][1] - centroid[1]);
-				xc[2] = centroid[2] + beta * (vs[len - 1][2] - centroid[2]);
-				xc[3] = centroid[3] + beta * (vs[len - 1][3] - centroid[3]);
-				fc = calculateDistance(new PGPuffModel(xc[0], xc[1], xc[2],
-						xc[3],stability, u, t));
-				if (fc >= fh)
-					return vs;
-			}
-			flag = true;
-			vs[len - 1][0] = xc[0];
-			vs[len - 1][1] = xc[1];
-			vs[len - 1][2] = xc[2];
-			vs[len - 1][3] = xc[3];
-		}
-		return vs;
-	}
-
-	private double[][] expand(double[][] vs, double[] centroid) {
-		int len = vs.length;
-		double[] xr = new double[4];
-		double[] xe = new double[4];
-		xr[0] = centroid[0] + alfa * (centroid[0] - vs[len - 1][0]);
-		xr[1] = centroid[1] + alfa * (centroid[1] - vs[len - 1][1]);
-		xr[2] = centroid[2] + alfa * (centroid[2] - vs[len - 1][2]);
-		xr[3] = centroid[3] + alfa * (centroid[3] - vs[len - 1][3]);
-		double fl = calculateDistance(new PGPuffModel(vs[0][0], vs[0][1],
-				vs[0][2], vs[0][3], stability, u, t));
-		double fr = calculateDistance(new PGPuffModel(xr[0], xr[1], xr[2], xr[3], stability,
-				u, t));
-
-		if (fl > fr) {
-			xe[0] = centroid[0] + gama * (xr[0] - centroid[0]);
-			xe[1] = centroid[1] + gama * (xr[1] - centroid[1]);
-			xe[2] = centroid[2] + gama * (xr[2] - centroid[2]);
-			xe[3] = centroid[3] + gama * (xr[3] - centroid[3]);
-			double fe = calculateDistance(new PGPuffModel(xe[0], xe[1], xe[2],
-					xe[3],stability, u, t));
-			if (fe < fr) {
-				flag = true;
-				vs[len - 1][0] = xe[0];
-				vs[len - 1][1] = xe[1];
-				vs[len - 1][2] = xe[2];
-				vs[len - 1][3] = xe[3];
-			}
-		}
-
-		return vs;
-	}
-	
-	public double getStopE() {
-		return stopE;
-	}
-
-	public void setStopE(double stopE) {
-		this.stopE = stopE;
-	}
-	
-	public int getMaxiIterationsNumber() {
-		return maxiIterationsNumber;
-	}
-
-	public void setMaxiIterationsNumber(int maxiIterationsNumber) {
-		this.maxiIterationsNumber = maxiIterationsNumber;
-	}
-	
-	public int getStability() {
-		return stability;
-	}
-
-	public void setStability(int stability) {
-		this.stability = stability;
-	}
-
-
-	public double getAlfa() {
-		return alfa;
-	}
-
-	public double getBeta() {
-		return beta;
-	}
-
 	public double getDelta() {
 		return delta;
-	}
-
-	public double[][] getDensityMeasured() {
-		return densityMeasured;
 	}
 
 	public double getGama() {
@@ -202,10 +60,6 @@ public class NelderMeadPuffSolver {
 
 	public double getQ0() {
 		return Q0;
-	}
-
-	public double getT() {
-		return t;
 	}
 
 	public double getU() {
@@ -224,61 +78,202 @@ public class NelderMeadPuffSolver {
 		return z0;
 	}
 
-	private double[][] initialSimplex() {
-		double[][] vertisSet = { { Q0, x0, y0, z0 }, { Q0, x0, y0, z0 },
-				{ Q0, x0, y0, z0 }, { Q0, x0, y0, z0 } , { Q0, x0, y0, z0 }};
-		vertisSet[1][0] = Q0 + h[0];
-		vertisSet[2][1] = x0 + h[1];
-		vertisSet[3][2] = y0 + h[2];
-		vertisSet[4][3] = z0 + h[3];
-		return vertisSet;
+	public double getAlfa() {
+		return alfa;
 	}
 
-	private double[][] ordering(double[][] vertisSet) {
+	public double getBeta() {
+		return beta;
+	}
 
-		int len = vertisSet.length;
-		double[] temp;
-		double[] dist = new double[len];
-		for (int i = 0; i < len; i++) {
-			PGPuffModel lm = new PGPuffModel(vertisSet[i][0],
-					vertisSet[i][1], vertisSet[i][2], vertisSet[i][3],stability, u, t);
-			dist[i] = calculateDistance(lm);
+	public NelderMeadPuffSolver(List<Sensor> sensors, double Q0, double x0,
+			double y0, double z0, int stability, double u) {
+		this.sensors = sensors;
+		this.Q0 = Q0;
+		this.x0 = x0;
+		this.y0 = y0;
+		this.z0 = z0;
+		this.stability = stability;
+		this.u = u;
+	}
+
+	private PuffChromosome calCentroid(List<PuffChromosome> puffChromosomes) {
+
+		int len = puffChromosomes.size();
+		double[] sum = { 0, 0, 0, 0 };
+		for (int i = 0; i < puffChromosomes.size(); i++) {
+			sum[0] += puffChromosomes.get(i).getQ0();
+			sum[1] += puffChromosomes.get(i).getX0();
+			sum[2] += puffChromosomes.get(i).getY0();
+			sum[3] += puffChromosomes.get(i).getZ0();
 		}
-		// sorting
-		for (int i = 0; i < len; i++) {
-			for (int j = i + 1; j <= len - 1; j++) {
-				if (dist[i] > dist[j]) {
-					temp = vertisSet[i];
-					vertisSet[i] = vertisSet[j];
-					vertisSet[j] = temp;
-				}
+		return new PuffChromosome(sum[0] / len, sum[1] / len, sum[2] / len,
+				sum[3] / len, sensors, stability, u);
+	}
+
+	private List<PuffChromosome> contract(List<PuffChromosome> puffChromosomes,
+			PuffChromosome centroid) {
+		int len = puffChromosomes.size();
+
+		double qr = centroid.getQ0() + alfa
+				* (centroid.getQ0() - puffChromosomes.get(len - 1).getQ0());
+		double xr = centroid.getX0() + alfa
+				* (centroid.getX0() - puffChromosomes.get(len - 1).getX0());
+		double yr = centroid.getY0() + alfa
+				* (centroid.getY0() - puffChromosomes.get(len - 1).getY0());
+		double zr = centroid.getZ0() + alfa
+				* (centroid.getZ0() - puffChromosomes.get(len - 1).getZ0());
+
+		PuffChromosome pr = new PuffChromosome(qr, xr, yr, zr, sensors,
+				stability, u);
+		double fr = pr.getFitness();
+		double fs = puffChromosomes.get(len - 2).getFitness();
+		double fh = puffChromosomes.get(len - 1).getFitness();
+		double fc;
+		double qc, xc, yc, zc;
+		PuffChromosome pc;
+
+		if (fr >= fs) {
+			if (fr < fh) {
+				qc = centroid.getQ0() + beta * (pr.getQ0() - centroid.getQ0());
+				xc = centroid.getX0() + beta * (pr.getX0() - centroid.getX0());
+				yc = centroid.getY0() + beta * (pr.getY0() - centroid.getY0());
+				zc = centroid.getZ0() + beta * (pr.getZ0() - centroid.getZ0());
+				pc = new PuffChromosome(qc, xc, yc, zc, sensors, stability, u);
+				fc = pc.getFitness();
+				if (fc > fr)
+					return puffChromosomes;
+			} else {
+				qc = centroid.getQ0()
+						+ beta
+						* (puffChromosomes.get(len - 1).getQ0() - centroid
+								.getQ0());
+				xc = centroid.getX0()
+						+ beta
+						* (puffChromosomes.get(len - 1).getX0() - centroid
+								.getX0());
+				yc = centroid.getY0()
+						+ beta
+						* (puffChromosomes.get(len - 1).getY0() - centroid
+								.getY0());
+				zc = centroid.getZ0()
+						+ beta
+						* (puffChromosomes.get(len - 1).getZ0() - centroid
+								.getZ0());
+				pc = new PuffChromosome(qc, xc, yc, zc, sensors, stability, u);
+				fc = pc.getFitness();
+				if (fc >= fh)
+					return puffChromosomes;
+			}
+			flag = true;
+			puffChromosomes.set(len - 1, pc);
+		}
+		return puffChromosomes;
+	}
+
+	private List<PuffChromosome> expand(List<PuffChromosome> puffChromosomes,
+			PuffChromosome centroid) {
+		int len = puffChromosomes.size();
+
+		double qr = centroid.getQ0() + alfa
+				* (centroid.getQ0() - puffChromosomes.get(len - 1).getQ0());
+		double xr = centroid.getX0() + alfa
+				* (centroid.getX0() - puffChromosomes.get(len - 1).getX0());
+		double yr = centroid.getY0() + alfa
+				* (centroid.getY0() - puffChromosomes.get(len - 1).getY0());
+		double zr = centroid.getZ0() + alfa
+				* (centroid.getZ0() - puffChromosomes.get(len - 1).getZ0());
+
+		double fl = puffChromosomes.get(0).getFitness();
+		PuffChromosome pr = new PuffChromosome(qr, xr, yr, zr, sensors,
+				stability, u);
+		double fr = pr.getFitness();
+
+		double qe, xe, ye, ze;
+		PuffChromosome pe;
+
+		if (fl > fr) {
+
+			qe = centroid.getQ0() + gama * (qr - centroid.getQ0());
+			xe = centroid.getX0() + gama * (xr - centroid.getX0());
+			ye = centroid.getY0() + gama * (yr - centroid.getY0());
+			ze = centroid.getZ0() + gama * (zr - centroid.getZ0());
+
+			pe = new PuffChromosome(qe, xe, ye, ze, sensors, stability, u);
+			double fe = pe.getFitness();
+
+			if (fe < fr) {
+				flag = true;
+				puffChromosomes.set(len - 1, pe);
 			}
 		}
 
-		return vertisSet;
+		return puffChromosomes;
 	}
 
-	private double[][] reflect(double[][] vs, double[] centroid) {
-		int len = vs.length;
-		double[] xr = new double[4];
-		xr[0] = centroid[0] + alfa * (centroid[0] - vs[len - 1][0]);
-		xr[1] = centroid[1] + alfa * (centroid[1] - vs[len - 1][1]);
-		xr[2] = centroid[2] + alfa * (centroid[2] - vs[len - 1][2]);
-		xr[3] = centroid[3] + alfa * (centroid[3] - vs[len - 1][3]);
-		double fl = calculateDistance(new PGPuffModel(vs[0][0], vs[0][1],
-				vs[0][2], vs[0][3], stability,u, t));
-		double fr = calculateDistance(new PGPuffModel(xr[0], xr[1], xr[2], xr[3],stability,
-				u, t));
-		double fs = calculateDistance(new PGPuffModel(vs[len - 2][0],
-				vs[len - 2][1], vs[len - 2][2], vs[len - 2][3], stability,u, t));
+	public double getStopE() {
+		return stopE;
+	}
+
+	public void setStopE(double stopE) {
+		this.stopE = stopE;
+	}
+
+	public int getMaxiIterationsNumber() {
+		return maxiIterationsNumber;
+	}
+
+	public void setMaxiIterationsNumber(int maxiIterationsNumber) {
+		this.maxiIterationsNumber = maxiIterationsNumber;
+	}
+
+	public int getStability() {
+		return stability;
+	}
+
+	public void setStability(int stability) {
+		this.stability = stability;
+	}
+
+	private List<PuffChromosome> initialSimplex() {
+
+		List<PuffChromosome> puffChromosomes = new ArrayList<PuffChromosome>();
+		puffChromosomes.add(new PuffChromosome(Q0 + h[0], x0, y0, z0, sensors,
+				stability, u));
+		puffChromosomes.add(new PuffChromosome(Q0, x0 + h[1], y0, z0, sensors,
+				stability, u));
+		puffChromosomes.add(new PuffChromosome(Q0, x0, y0 + h[2], z0, sensors,
+				stability, u));
+		puffChromosomes.add(new PuffChromosome(Q0, x0, y0, z0 + h[3], sensors,
+				stability, u));
+
+		return puffChromosomes;
+	}
+
+	private List<PuffChromosome> reflect(List<PuffChromosome> puffChromosomes,
+			PuffChromosome centroid) {
+		int len = puffChromosomes.size();
+		double q = centroid.getQ0() + alfa
+				* (centroid.getQ0() - puffChromosomes.get(len - 1).getQ0());
+		double x = centroid.getX0() + alfa
+				* (centroid.getX0() - puffChromosomes.get(len - 1).getX0());
+		double y = centroid.getY0() + alfa
+				* (centroid.getY0() - puffChromosomes.get(len - 1).getY0());
+		double z = centroid.getZ0() + alfa
+				* (centroid.getZ0() - puffChromosomes.get(len - 1).getZ0());
+		double fl = puffChromosomes.get(0).getFitness();
+		double fr = new PuffChromosome(q, x, y, z, sensors, stability, u)
+				.getFitness();
+		double fs = puffChromosomes.get(len - 2).getFitness();
 		if ((fl <= fr) && (fr < fs)) {
 			flag = true;
-			vs[len - 1][0] = xr[0];
-			vs[len - 1][1] = xr[1];
-			vs[len - 1][2] = xr[2];
-			vs[len - 1][3] = xr[3];
+			puffChromosomes.get(len - 1).setQ0(q);
+			puffChromosomes.get(len - 1).setX0(x);
+			puffChromosomes.get(len - 1).setX0(y);
+			puffChromosomes.get(len - 1).setX0(z);
+			puffChromosomes.get(len - 1).setFitness(sensors, stability, u);
 		}
-		return vs;
+		return puffChromosomes;
 	}
 
 	public void setAlfa(double alfa) {
@@ -293,10 +288,6 @@ public class NelderMeadPuffSolver {
 		this.delta = delta;
 	}
 
-	public void setDensityMeasured(double[][] densityMeasured) {
-		this.densityMeasured = densityMeasured;
-	}
-
 	public void setGama(double gama) {
 		this.gama = gama;
 	}
@@ -307,10 +298,6 @@ public class NelderMeadPuffSolver {
 
 	public void setQ0(double q0) {
 		Q0 = q0;
-	}
-
-	public void setT(double t) {
-		this.t = t;
 	}
 
 	public void setU(double u) {
@@ -329,97 +316,71 @@ public class NelderMeadPuffSolver {
 		this.z0 = z0;
 	}
 
-	private double[][] shrink(double[][] vs, double[] centroid) {
-		int len = vs.length;
+	private List<PuffChromosome> shrink(List<PuffChromosome> puffChromosomes, PuffChromosome centroid) {
+		int len = puffChromosomes.size();
+		PuffChromosome puffChromosome;
 		for (int i = 1; i < len; i++) {
-			vs[i][0] = vs[0][0] + delta * (vs[i][0] - vs[0][0]);
-			vs[i][1] = vs[0][1] + delta * (vs[i][1] - vs[0][1]);
-			vs[i][2] = vs[0][2] + delta * (vs[i][2] - vs[0][2]);
-			vs[i][3] = vs[0][3] + delta * (vs[i][3] - vs[0][3]);
+			puffChromosome=new PuffChromosome(puffChromosomes.get(i).getQ0() + delta * (puffChromosomes.get(i).getQ0() - puffChromosomes.get(0).getQ0()),
+					puffChromosomes.get(i).getX0() + delta * (puffChromosomes.get(i).getX0() - puffChromosomes.get(0).getX0()),
+					puffChromosomes.get(i).getY0() + delta * (puffChromosomes.get(i).getY0() - puffChromosomes.get(0).getY0()),
+					puffChromosomes.get(i).getZ0() + delta * (puffChromosomes.get(i).getZ0() - puffChromosomes.get(0).getZ0()),
+					sensors, stability, u);
+			puffChromosomes.set(i, puffChromosome);
 		}
-		return vs;
+		return puffChromosomes;
 	}
 
-	private double[] simplexTransformation(double[][] vertisSet) {
+	@SuppressWarnings("unchecked")
+	private PuffChromosome simplexTransformation(
+			List<PuffChromosome> puffChromosomes) {
 
-		double[][] vs = vertisSet;
-		double[] centroid;
+		PuffChromosome centroid;
+		Collections.sort(puffChromosomes, new FitnessComparator());
+		centroid = calCentroid(puffChromosomes);
 
-		vs = ordering(vertisSet);
-		centroid = calCentroid(vs);
 		int num = 0;
-		while (!terminationTest(centroid) & num< maxiIterationsNumber) {
-			vs = transformation(vs, centroid);
-			vs = ordering(vs);
-			centroid = calCentroid(vs);
+		while (!terminationTest(centroid) & num < maxiIterationsNumber) {
+			puffChromosomes = transformation(puffChromosomes, centroid);
+			Collections.sort(puffChromosomes, new FitnessComparator());
+			centroid = calCentroid(puffChromosomes);
 			num++;
 		}
-		System.out.println("Number of loops: "+Integer.toString(num));
-		
-		double[] result=new double[5];
-		result[0]=centroid[0];
-		result[1]=centroid[1];
-		result[2]=centroid[2];
-		result[3]=centroid[3];
-		result[4]=calculateDistance(new PGPuffModel(result[0],
-				result[1], result[2], result[3],stability, u, t));
-		return result;
+		System.out.println("Number of loops: " + Integer.toString(num));
+
+		return centroid;
 	}
 
-	public double[] NelderMeadSolve() {
+	public PuffChromosome NelderMeadSolve() {
 
-		double[][] vertisSet = initialSimplex();
-		return simplexTransformation(vertisSet);
+		List<PuffChromosome> puffChromosomes = initialSimplex();
+		return simplexTransformation(puffChromosomes);
 	}
 
-	private boolean terminationTest(double[] centroid) {
-		PGPuffModel lmc = new PGPuffModel(centroid[0], centroid[1],
-				centroid[2], centroid[3],stability, u, t);
-		double distc = calculateDistance(lmc);
-		if (distc < stopE) {
+	private boolean terminationTest(PuffChromosome puffChromosome) {
+		if (puffChromosome.getFitness() < stopE) {
 			return true;
 		} else {
 			return false;
 		}
 	}
-	
-/*	private boolean terminationTest(double[][] vs, double[] centroid) {
-		int len = vs.length;
-		PGPuffModel lmc = new PGPuffModel(centroid[0], centroid[1],
-				centroid[2], centroid[3], u, t);
-		double distc = calculateDistance(lmc);
-		double sum = 0;
-		for (int i = 0; i < len; i++) {
-			PGPuffModel lm = new PGPuffModel(vs[i][0], vs[i][1], vs[i][2],
-					vs[i][3], stability, u, t);
-			sum += Math.pow(calculateDistance(lm) - distc, 2);
-		}
-		sum /= len;
-		sum = Math.sqrt(sum);
-		if (sum < stopE) {
-			return true;
-		} else {
-			return false;
-		}
-	}*/
 
-	private double[][] transformation(double[][] vs, double[] centroid) {
+	private List<PuffChromosome> transformation(
+			List<PuffChromosome> puffChromosomes, PuffChromosome centroid) {
 		flag = false;
-		vs = reflect(vs, centroid);
+		puffChromosomes = reflect(puffChromosomes, centroid);
 		if (flag) {
-			return vs;
+			return puffChromosomes;
 		}
-		vs = expand(vs, centroid);
+		puffChromosomes = expand(puffChromosomes, centroid);
 		if (flag) {
-			return vs;
+			return puffChromosomes;
 		}
-		vs = contract(vs, centroid);
+		puffChromosomes = contract(puffChromosomes, centroid);
 		if (flag) {
-			return vs;
+			return puffChromosomes;
 		}
-		vs = shrink(vs, centroid);
-		return vs;
+		puffChromosomes = shrink(puffChromosomes, centroid);
+		return puffChromosomes;
 	}
 
-	
 }

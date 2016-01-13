@@ -22,10 +22,10 @@ public class TestSourceTracker {
 				{ 256.0, 22.0, 0.0, 0.20559229553296893 },
 				{ 258.0, 10.0, 0.0, 0.2397976029403484 } };
 		double[] result = new double[] { 2700, 8, 5, 0 };
-		
-		long startTime=System.currentTimeMillis();
+
+		long startTime = System.currentTimeMillis();
 		System.out.println("Performing genetic algorithm ...");
-		GAPlumeSolver gs= new GAPlumeSolver(densityMeasured0,5,0,2);
+		GAPlumeSolver gs = new GAPlumeSolver(densityMeasured0, 5, 0, 2);
 		gs.setMinQ0(20.0);
 		gs.setMaxQ0(8000.0);
 		gs.setMinY0(2.0);
@@ -38,11 +38,11 @@ public class TestSourceTracker {
 		gs.setSizePopulation(200);
 		gs.setGenerationBound(100);
 		result = gs.GASolve();
-		System.out.println("Result: "+Arrays.toString(result));
+		System.out.println("Result: " + Arrays.toString(result));
 		System.out.println("Applying Nelder Mead simplex method ...");
-		NelderMeadPlumeSolver nms = new NelderMeadPlumeSolver(densityMeasured0, result[0], result[1],
-				result[2],5,0,2);
-		double[] h1 = {90, 3, 2 };
+		NelderMeadPlumeSolver nms = new NelderMeadPlumeSolver(densityMeasured0,
+				result[0], result[1], result[2], 5, 0, 2);
+		double[] h1 = { 90, 3, 2 };
 		nms.setH(h1);
 		nms.setAlfa(1);
 		nms.setBeta(0.5);
@@ -51,11 +51,12 @@ public class TestSourceTracker {
 		nms.setStopE(1E-9);
 		nms.setMaxiIterationsNumber(9999);
 		result = nms.NelderMeadSolve();
-		System.out.println("Result: "+Arrays.toString(result));
-		long timeConsumed=System.currentTimeMillis()-startTime;
-		System.out.println("time consumed:"+Long.toString(timeConsumed, 10)+" (ms)");
+		System.out.println("Result: " + Arrays.toString(result));
+		long timeConsumed = System.currentTimeMillis() - startTime;
+		System.out.println("time consumed:" + Long.toString(timeConsumed, 10)
+				+ " (ms)");
 	}
-	
+
 	@Test
 	public void testPuff() {
 		List<Sensor> sensors = new ArrayList<Sensor>();
@@ -88,9 +89,8 @@ public class TestSourceTracker {
 		gs.setGenerationBound(200);
 		finalPuffChromosome = gs.GASolve();
 		System.out.println("Result: " + finalPuffChromosome.toString());
-		/*System.out.println("Applying Nelder Mead simplex method ...");
-		NelderMeadPuffSolver nms = new NelderMeadPuffSolver(densityMeasured0,
-				result[0], result[1], result[2], result[3], 5, 2, 100);
+		System.out.println("Applying Nelder Mead simplex method ...");
+		NelderMeadPuffSolver nms = new NelderMeadPuffSolver(sensors, finalPuffChromosome.getQ0(), finalPuffChromosome.getX0(), finalPuffChromosome.getY0(),finalPuffChromosome.getZ0(),5, 2);
 		double[] h1 = { 90, 10, 3, 2 };
 		nms.setH(h1);
 		nms.setAlfa(1);
@@ -99,13 +99,13 @@ public class TestSourceTracker {
 		nms.setDelta(0.5);
 		nms.setStopE(1E-9);
 		nms.setMaxiIterationsNumber(9999);
-		result = nms.NelderMeadSolve();
-		System.out.println("Result: " + Arrays.toString(result));*/
+		finalPuffChromosome = nms.NelderMeadSolve();
+		System.out.println("Result: " + finalPuffChromosome.toString());
 		long timeConsumed = System.currentTimeMillis() - startTime;
 		System.out.println("time consumed:" + Long.toString(timeConsumed, 10)
 				+ " (ms)");
 	}
-	
+
 	@Test
 	public void generatePlumeTestData() {
 		double[][] densityMeasured0 = {
@@ -126,7 +126,7 @@ public class TestSourceTracker {
 		}
 		System.out.print(Arrays.deepToString(densityMeasured0));
 	}
-	
+
 	@Test
 	public void generatePuffTestData() {
 		double[][] densityMeasured0 = {
@@ -140,7 +140,7 @@ public class TestSourceTracker {
 				{ 254.0, 20.0, 0.0, 0.22266455658743103 },
 				{ 256.0, 22.0, 0.0, 0.20559229553296893 },
 				{ 258.0, 10.0, 0.0, 0.2397976029403484 } };
-		PGPuffModel lm2 = new PGPuffModel(2000,50,15, 10, 5, 2, 100);
+		PGPuffModel lm2 = new PGPuffModel(2000, 50, 15, 10, 5, 2, 100);
 		for (int i = 0; i < densityMeasured0.length; i++) {
 			densityMeasured0[i][3] = lm2.getDensity(densityMeasured0[i][0],
 					densityMeasured0[i][1], densityMeasured0[i][2]);
