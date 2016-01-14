@@ -5,7 +5,7 @@ public class Sensor {
 	private double xPos;
 	private double yPos;
 	private double zPos;
-	private double t;
+	private double t=-1;
 	private double valueMeasured;
 	
 	public Sensor(double xPos,double yPos,double zPos,double t, double valueMeasured){
@@ -21,6 +21,24 @@ public class Sensor {
 		this.yPos=yPos;
 		this.zPos=zPos;
 		this.valueMeasured=valueMeasured;
+	}
+	
+	public String toStringWithName(){
+		String showStr = "xPos = " + xPos + "\t";
+		showStr += "yPos = " + yPos + "\t";
+		showStr += "zPos = " + zPos + "\t";
+		if (t>0) {showStr += "t = " + t + "\t";}
+		showStr += "valueMeasured = " + valueMeasured + "\t";
+		return showStr;
+	}
+	
+	public String toString(){
+		String showStr = "(" + xPos ;
+		showStr += ", " + yPos ;
+		showStr += ", " + zPos;
+		if (t>0) {showStr += ", " + t;}
+		showStr += ", " + valueMeasured + ")";
+		return showStr;
 	}
 	
 	public double getxPos() {

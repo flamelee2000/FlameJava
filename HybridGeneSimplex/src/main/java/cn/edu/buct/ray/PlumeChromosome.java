@@ -10,7 +10,7 @@ public class PlumeChromosome  implements Comparable{
 	private double z0;
 	private double fitness;
 
-	public String toString(){
+	public String toStringWithName(){
 		String showStr = "Q0 = " + Q0 + "\t";
 		showStr += "y0 = " + y0 + "\t";
 		showStr += "z0 = " + z0 + "\t";

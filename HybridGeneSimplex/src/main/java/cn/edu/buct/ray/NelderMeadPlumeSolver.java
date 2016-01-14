@@ -1,5 +1,11 @@
 package cn.edu.buct.ray;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import cn.edu.buct.ray.GAPlumeSolver.FitnessComparator;
+
 public class NelderMeadPlumeSolver {
 
 	private double stopE;
@@ -10,19 +16,19 @@ public class NelderMeadPlumeSolver {
 
 	private double delta;
 
-	private double[][] densityMeasured;
+	private List<Sensor> sensors;
 
 	private double gama;
 
 	private double[] h;
 
 	private double Q0;
-	
+
 	private int stability;
 
-	private int urCondition;
-
 	private double u;
+
+	private int urCondition;
 
 	private double y0;
 
@@ -31,111 +37,6 @@ public class NelderMeadPlumeSolver {
 	private boolean flag;
 
 	private int maxiIterationsNumber;
-
-	public NelderMeadPlumeSolver(double[][] densityMeasured, double Q0, 
-			double y0, double z0, int stability, int urCondition, double u) {
-		this.densityMeasured = densityMeasured;
-		this.Q0 = Q0;
-		this.y0 = y0;
-		this.z0 = z0;
-		this.stability=stability;
-		this.urCondition=urCondition;
-		this.u = u;
-	}
-
-	private double[] calCentroid(double[][] vs1) {
-		int len = vs1.length;
-		double[] sum = { 0, 0, 0};
-		double[] avg = { 0, 0, 0};
-		for (int i = 0; i < len - 1; i++) {
-			sum[0] += vs1[i][0];
-			sum[1] += vs1[i][1];
-			sum[2] += vs1[i][2];
-		}
-		avg[0] = sum[0] / (len - 1);
-		avg[1] = sum[1] / (len - 1);
-		avg[2] = sum[2] / (len - 1);
-		return avg;
-	}
-
-	private double calculateDistance(PGPlumeModel lm) {
-		int sensorNum = densityMeasured.length;
-		double[] densityCalculating = new double[sensorNum];
-		double dist = 0;
-		for (int i = 0; i < sensorNum; i++) {
-			densityCalculating[i] = lm.getDensity(densityMeasured[i][0],
-					densityMeasured[i][1], densityMeasured[i][2]);
-			dist += Math.pow(densityCalculating[i] - densityMeasured[i][3], 2);
-		}
-		return dist;
-	}
-
-	private double[][] contract(double[][] vs, double[] centroid) {
-		int len = vs.length;
-		double[] xr = new double[3];
-		double[] xc = new double[3];
-		xr[0] = centroid[0] + alfa * (centroid[0] - vs[len - 1][0]);
-		xr[1] = centroid[1] + alfa * (centroid[1] - vs[len - 1][1]);
-		xr[2] = centroid[2] + alfa * (centroid[2] - vs[len - 1][2]);
-		double fr = calculateDistance(new PGPlumeModel(xr[0], xr[1], xr[2], stability, urCondition, u));
-		double fs = calculateDistance(new PGPlumeModel(vs[len - 2][0],
-				vs[len - 2][1], vs[len - 2][2],stability, urCondition, u));
-		double fh = calculateDistance(new PGPlumeModel(vs[len - 1][0],
-				vs[len - 1][1], vs[len - 1][2],stability, urCondition, u));
-		double fc;
-		if (fr >= fs) {
-			if (fr < fh) {
-				xc[0] = centroid[0] + beta * (xr[0] - centroid[0]);
-				xc[1] = centroid[1] + beta * (xr[1] - centroid[1]);
-				xc[2] = centroid[2] + beta * (xr[2] - centroid[2]);
-				fc = calculateDistance(new PGPlumeModel(xc[0], xc[1], xc[2],
-						stability, urCondition, u));
-				if (fc > fr)
-					return vs;
-			} else {
-				xc[0] = centroid[0] + beta * (vs[len - 1][0] - centroid[0]);
-				xc[1] = centroid[1] + beta * (vs[len - 1][1] - centroid[1]);
-				xc[2] = centroid[2] + beta * (vs[len - 1][2] - centroid[2]);
-				fc = calculateDistance(new PGPlumeModel(xc[0], xc[1], xc[2],
-						stability, urCondition, u));
-				if (fc >= fh)
-					return vs;
-			}
-			flag = true;
-			vs[len - 1][0] = xc[0];
-			vs[len - 1][1] = xc[1];
-			vs[len - 1][2] = xc[2];
-		}
-		return vs;
-	}
-
-	private double[][] expand(double[][] vs, double[] centroid) {
-		int len = vs.length;
-		double[] xr = new double[3];
-		double[] xe = new double[3];
-		xr[0] = centroid[0] + alfa * (centroid[0] - vs[len - 1][0]);
-		xr[1] = centroid[1] + alfa * (centroid[1] - vs[len - 1][1]);
-		xr[2] = centroid[2] + alfa * (centroid[2] - vs[len - 1][2]);
-		double fl = calculateDistance(new PGPlumeModel(vs[0][0], vs[0][1],
-				vs[0][2], stability, urCondition, u));
-		double fr = calculateDistance(new PGPlumeModel(xr[0], xr[1], xr[2], stability, urCondition, u));
-
-		if (fl > fr) {
-			xe[0] = centroid[0] + gama * (xr[0] - centroid[0]);
-			xe[1] = centroid[1] + gama * (xr[1] - centroid[1]);
-			xe[2] = centroid[2] + gama * (xr[2] - centroid[2]);
-			double fe = calculateDistance(new PGPlumeModel(xe[0], xe[1], xe[2],
-					stability, urCondition, u));
-			if (fe < fr) {
-				flag = true;
-				vs[len - 1][0] = xe[0];
-				vs[len - 1][1] = xe[1];
-				vs[len - 1][2] = xe[2];
-			}
-		}
-
-		return vs;
-	}
 	
 	public int getUrCondition() {
 		return urCondition;
@@ -144,46 +45,17 @@ public class NelderMeadPlumeSolver {
 	public void setUrCondition(int urCondition) {
 		this.urCondition = urCondition;
 	}
-
-	public double getStopE() {
-		return stopE;
-	}
-
-	public void setStopE(double stopE) {
-		this.stopE = stopE;
-	}
 	
-	public int getMaxiIterationsNumber() {
-		return maxiIterationsNumber;
+	public List<Sensor> getSensors() {
+		return sensors;
 	}
 
-	public void setMaxiIterationsNumber(int maxiIterationsNumber) {
-		this.maxiIterationsNumber = maxiIterationsNumber;
-	}
-	
-	public int getStability() {
-		return stability;
-	}
-
-	public void setStability(int stability) {
-		this.stability = stability;
-	}
-
-
-	public double getAlfa() {
-		return alfa;
-	}
-
-	public double getBeta() {
-		return beta;
+	public void setSensors(List<Sensor> sensors) {
+		this.sensors = sensors;
 	}
 
 	public double getDelta() {
 		return delta;
-	}
-
-	public double[][] getDensityMeasured() {
-		return densityMeasured;
 	}
 
 	public double getGama() {
@@ -210,57 +82,182 @@ public class NelderMeadPlumeSolver {
 		return z0;
 	}
 
-	private double[][] initialSimplex() {
-		double[][] vertisSet = { { Q0, y0, z0 },  { Q0, y0, z0 }, 
-				 { Q0, y0, z0 },  { Q0, y0, z0 }};
-		vertisSet[1][0] = Q0 + h[0];
-		vertisSet[2][1] = y0 + h[1];
-		vertisSet[3][2] = z0 + h[2];
-		return vertisSet;
+	public double getAlfa() {
+		return alfa;
 	}
 
-	private double[][] ordering(double[][] vertisSet) {
+	public double getBeta() {
+		return beta;
+	}
 
-		int len = vertisSet.length;
-		double[] temp;
-		double[] dist = new double[len];
-		for (int i = 0; i < len; i++) {
-			PGPlumeModel lm = new PGPlumeModel(vertisSet[i][0],
-					vertisSet[i][1], vertisSet[i][2],stability, urCondition, u);
-			dist[i] = calculateDistance(lm);
+	public NelderMeadPlumeSolver(List<Sensor> sensors, double Q0, 
+			double y0, double z0, int stability, int urCondition, double u) {
+		this.sensors = sensors;
+		this.Q0 = Q0;
+		this.y0 = y0;
+		this.z0 = z0;
+		this.stability = stability;
+		this.urCondition=urCondition;
+		this.u = u;
+	}
+
+	private PlumeChromosome calCentroid(List<PlumeChromosome> PlumeChromosomes) {
+
+		int len = PlumeChromosomes.size();
+		double[] sum = { 0, 0, 0 };
+		for (int i = 0; i < len-1; i++) {
+			sum[0] += PlumeChromosomes.get(i).getQ0();
+			sum[1] += PlumeChromosomes.get(i).getY0();
+			sum[2] += PlumeChromosomes.get(i).getZ0();
 		}
-		// sorting
-		for (int i = 0; i < len; i++) {
-			for (int j = i + 1; j <= len - 1; j++) {
-				if (dist[i] > dist[j]) {
-					temp = vertisSet[i];
-					vertisSet[i] = vertisSet[j];
-					vertisSet[j] = temp;
-				}
+		
+		return new PlumeChromosome(sum[0] / (len-1), sum[1] / (len-1), sum[2] / (len-1),
+				sensors, stability, urCondition, u);
+	}
+
+	private List<PlumeChromosome> contract(List<PlumeChromosome> PlumeChromosomes,
+			PlumeChromosome centroid) {
+		int len = PlumeChromosomes.size();
+
+		double qr = centroid.getQ0() + alfa
+				* (centroid.getQ0() - PlumeChromosomes.get(len - 1).getQ0());
+		double yr = centroid.getY0() + alfa
+				* (centroid.getY0() - PlumeChromosomes.get(len - 1).getY0());
+		double zr = centroid.getZ0() + alfa
+				* (centroid.getZ0() - PlumeChromosomes.get(len - 1).getZ0());
+
+		PlumeChromosome pr = new PlumeChromosome(qr, yr, zr, sensors,
+				stability, urCondition, u);
+		double fr = pr.getFitness();
+		double fs = PlumeChromosomes.get(len - 2).getFitness();
+		double fh = PlumeChromosomes.get(len - 1).getFitness();
+		double fc;
+		double qc, yc, zc;
+		PlumeChromosome pc;
+
+		if (fr >= fs) {
+			if (fr < fh) {
+				qc = centroid.getQ0() + beta * (pr.getQ0() - centroid.getQ0());
+				yc = centroid.getY0() + beta * (pr.getY0() - centroid.getY0());
+				zc = centroid.getZ0() + beta * (pr.getZ0() - centroid.getZ0());
+				pc = new PlumeChromosome(qc, yc, zc, sensors, stability, urCondition, u);
+				fc = pc.getFitness();
+				if (fc > fr)
+					return PlumeChromosomes;
+			} else {
+				qc = centroid.getQ0()
+						+ beta
+						* (PlumeChromosomes.get(len - 1).getQ0() - centroid
+								.getQ0());
+				yc = centroid.getY0()
+						+ beta
+						* (PlumeChromosomes.get(len - 1).getY0() - centroid
+								.getY0());
+				zc = centroid.getZ0()
+						+ beta
+						* (PlumeChromosomes.get(len - 1).getZ0() - centroid
+								.getZ0());
+				pc = new PlumeChromosome(qc, yc, zc, sensors, stability, urCondition, u);
+				fc = pc.getFitness();
+				if (fc >= fh)
+					return PlumeChromosomes;
+			}
+			flag = true;
+			PlumeChromosomes.set(len - 1, pc);
+		}
+		return PlumeChromosomes;
+	}
+
+	private List<PlumeChromosome> expand(List<PlumeChromosome> PlumeChromosomes,
+			PlumeChromosome centroid) {
+		int len = PlumeChromosomes.size();
+
+		double qr = centroid.getQ0() + alfa
+				* (centroid.getQ0() - PlumeChromosomes.get(len - 1).getQ0());
+		double yr = centroid.getY0() + alfa
+				* (centroid.getY0() - PlumeChromosomes.get(len - 1).getY0());
+		double zr = centroid.getZ0() + alfa
+				* (centroid.getZ0() - PlumeChromosomes.get(len - 1).getZ0());
+		double fl = PlumeChromosomes.get(0).getFitness();
+		PlumeChromosome pr = new PlumeChromosome(qr, yr, zr, sensors,
+				stability, urCondition, u);
+		double fr = pr.getFitness();
+		double qe, ye, ze;
+		PlumeChromosome pe;
+
+		if (fl > fr) {
+			qe = centroid.getQ0() + gama * (qr - centroid.getQ0());
+			ye = centroid.getY0() + gama * (yr - centroid.getY0());
+			ze = centroid.getZ0() + gama * (zr - centroid.getZ0());
+			pe = new PlumeChromosome(qe, ye, ze, sensors, stability, urCondition, u);
+			double fe = pe.getFitness();
+
+			if (fe < fr) {
+				flag = true;
+				PlumeChromosomes.set(len - 1, pe);
 			}
 		}
 
-		return vertisSet;
+		return PlumeChromosomes;
 	}
 
-	private double[][] reflect(double[][] vs, double[] centroid) {
-		int len = vs.length;
-		double[] xr = new double[3];
-		xr[0] = centroid[0] + alfa * (centroid[0] - vs[len - 1][0]);
-		xr[1] = centroid[1] + alfa * (centroid[1] - vs[len - 1][1]);
-		xr[2] = centroid[2] + alfa * (centroid[2] - vs[len - 1][2]);
-		double fl = calculateDistance(new PGPlumeModel(vs[0][0], vs[0][1],
-				vs[0][2], stability, urCondition, u));
-		double fr = calculateDistance(new PGPlumeModel(xr[0], xr[1], xr[2],stability, urCondition, u));
-		double fs = calculateDistance(new PGPlumeModel(vs[len - 2][0],
-				vs[len - 2][1], vs[len - 2][2],  stability, urCondition, u));
+	public double getStopE() {
+		return stopE;
+	}
+
+	public void setStopE(double stopE) {
+		this.stopE = stopE;
+	}
+
+	public int getMaxiIterationsNumber() {
+		return maxiIterationsNumber;
+	}
+
+	public void setMaxiIterationsNumber(int maxiIterationsNumber) {
+		this.maxiIterationsNumber = maxiIterationsNumber;
+	}
+
+	public int getStability() {
+		return stability;
+	}
+
+	public void setStability(int stability) {
+		this.stability = stability;
+	}
+
+	private List<PlumeChromosome> initialSimplex() {
+
+		List<PlumeChromosome> PlumeChromosomes = new ArrayList<PlumeChromosome>();
+		PlumeChromosomes.add(new PlumeChromosome(Q0, y0, z0, sensors,
+				stability, urCondition, u));
+		PlumeChromosomes.add(new PlumeChromosome(Q0 + h[0], y0, z0, sensors,
+				stability, urCondition, u));
+		PlumeChromosomes.add(new PlumeChromosome(Q0, y0 + h[1], z0, sensors,
+				stability, urCondition, u));
+		PlumeChromosomes.add(new PlumeChromosome(Q0, y0, z0 + h[2], sensors,
+				stability, urCondition, u));
+
+		return PlumeChromosomes;
+	}
+
+	private List<PlumeChromosome> reflect(List<PlumeChromosome> PlumeChromosomes,
+			PlumeChromosome centroid) {
+		int len = PlumeChromosomes.size();
+		double q = centroid.getQ0() + alfa
+				* (centroid.getQ0() - PlumeChromosomes.get(len - 1).getQ0());
+		double y = centroid.getY0() + alfa
+				* (centroid.getY0() - PlumeChromosomes.get(len - 1).getY0());
+		double z = centroid.getZ0() + alfa
+				* (centroid.getZ0() - PlumeChromosomes.get(len - 1).getZ0());
+		double fl = PlumeChromosomes.get(0).getFitness();
+		PlumeChromosome pr = new PlumeChromosome(q, y, z, sensors, stability, urCondition, u);
+		double fr = pr.getFitness();
+		double fs = PlumeChromosomes.get(len - 2).getFitness();
 		if ((fl <= fr) && (fr < fs)) {
 			flag = true;
-			vs[len - 1][0] = xr[0];
-			vs[len - 1][1] = xr[1];
-			vs[len - 1][2] = xr[2];
+			PlumeChromosomes.set(len - 1, pr);
 		}
-		return vs;
+		return PlumeChromosomes;
 	}
 
 	public void setAlfa(double alfa) {
@@ -273,10 +270,6 @@ public class NelderMeadPlumeSolver {
 
 	public void setDelta(double delta) {
 		this.delta = delta;
-	}
-
-	public void setDensityMeasured(double[][] densityMeasured) {
-		this.densityMeasured = densityMeasured;
 	}
 
 	public void setGama(double gama) {
@@ -303,73 +296,70 @@ public class NelderMeadPlumeSolver {
 		this.z0 = z0;
 	}
 
-	private double[][] shrink(double[][] vs, double[] centroid) {
-		int len = vs.length;
+	private List<PlumeChromosome> shrink(List<PlumeChromosome> PlumeChromosomes, PlumeChromosome centroid) {
+		int len = PlumeChromosomes.size();
+		PlumeChromosome PlumeChromosome;
 		for (int i = 1; i < len; i++) {
-			vs[i][0] = vs[0][0] + delta * (vs[i][0] - vs[0][0]);
-			vs[i][1] = vs[0][1] + delta * (vs[i][1] - vs[0][1]);
-			vs[i][2] = vs[0][2] + delta * (vs[i][2] - vs[0][2]);
+			PlumeChromosome=new PlumeChromosome(PlumeChromosomes.get(0).getQ0() + delta * (PlumeChromosomes.get(i).getQ0() - PlumeChromosomes.get(0).getQ0()),
+					PlumeChromosomes.get(0).getY0() + delta * (PlumeChromosomes.get(i).getY0() - PlumeChromosomes.get(0).getY0()),
+					PlumeChromosomes.get(0).getZ0() + delta * (PlumeChromosomes.get(i).getZ0() - PlumeChromosomes.get(0).getZ0()),
+					sensors, stability, urCondition, u);
+			PlumeChromosomes.set(i, PlumeChromosome);
 		}
-		return vs;
+		return PlumeChromosomes;
 	}
 
-	private double[] simplexTransformation(double[][] vertisSet) {
+	@SuppressWarnings("unchecked")
+	private PlumeChromosome simplexTransformation(
+			List<PlumeChromosome> PlumeChromosomes) {
 
-		double[][] vs = vertisSet;
-		double[] centroid;
+		PlumeChromosome centroid;
+		Collections.sort(PlumeChromosomes, new FitnessComparator());
+		centroid = calCentroid(PlumeChromosomes);
 
-		vs = ordering(vertisSet);
-		centroid = calCentroid(vs);
 		int num = 0;
-		while (!terminationTest(centroid) & num< maxiIterationsNumber) {
-			vs = transformation(vs, centroid);
-			vs = ordering(vs);
-			centroid = calCentroid(vs);
+		while (!terminationTest(centroid) & num < maxiIterationsNumber) {
+			PlumeChromosomes = transformation(PlumeChromosomes, centroid);
+			Collections.sort(PlumeChromosomes, new FitnessComparator());
+			centroid = calCentroid(PlumeChromosomes);
 			num++;
 		}
-		System.out.println("Number of loops: "+Integer.toString(num));
-		
-		double[] result=new double[4];
-		result[0]=centroid[0];
-		result[1]=centroid[1];
-		result[2]=centroid[2];
-		result[3]=calculateDistance(new PGPlumeModel(result[0],
-				result[1], result[2], stability, urCondition, u));
-		return result;
+		System.out.println("Number of loops: " + Integer.toString(num));
+
+		return centroid;
 	}
 
-	public double[] NelderMeadSolve() {
+	public PlumeChromosome NelderMeadSolve() {
 
-		double[][] vertisSet = initialSimplex();
-		return simplexTransformation(vertisSet);
+		List<PlumeChromosome> PlumeChromosomes = initialSimplex();
+		return simplexTransformation(PlumeChromosomes);
 	}
 
-	private boolean terminationTest(double[] centroid) {
-		PGPlumeModel lmc = new PGPlumeModel(centroid[0], centroid[1],
-				centroid[2], stability, urCondition, u);
-		double distc = calculateDistance(lmc);
-		if (distc < stopE) {
+	private boolean terminationTest(PlumeChromosome PlumeChromosome) {
+		if (PlumeChromosome.getFitness() < stopE) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	private double[][] transformation(double[][] vs, double[] centroid) {
+	private List<PlumeChromosome> transformation(
+			List<PlumeChromosome> PlumeChromosomes, PlumeChromosome centroid) {
 		flag = false;
-		vs = reflect(vs, centroid);
+		PlumeChromosomes = reflect(PlumeChromosomes, centroid);
 		if (flag) {
-			return vs;
+			return PlumeChromosomes;
 		}
-		vs = expand(vs, centroid);
+		PlumeChromosomes = expand(PlumeChromosomes, centroid);
 		if (flag) {
-			return vs;
+			return PlumeChromosomes;
 		}
-		vs = contract(vs, centroid);
+		PlumeChromosomes = contract(PlumeChromosomes, centroid);
 		if (flag) {
-			return vs;
+			return PlumeChromosomes;
 		}
-		vs = shrink(vs, centroid);
-		return vs;
+		PlumeChromosomes = shrink(PlumeChromosomes, centroid);
+		return PlumeChromosomes;
 	}
+
 }
