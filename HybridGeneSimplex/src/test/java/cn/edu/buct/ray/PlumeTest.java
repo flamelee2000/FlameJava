@@ -18,8 +18,8 @@ public class PlumeTest {
 				{ 248.0, 24.0, 0.0 }, { 250.0, 25.0, 0.0 },
 				{ 252.0, 24.0, 0.0 }, { 254.0, 20.0, 0.0 },
 				{ 256.0, 22.0, 0.0 }, { 258.0, 10.0, 0.0 } };
-		PGPlumeModel lm1 = new PGPlumeModel(2000, 15, 10, 5, 0, 2);
-		PGPlumeModel lm2 = new PGPlumeModel(3100, 23, 6, 5, 0, 2);
+		PGPlumeModel lm1 = new PGPlumeModel(2800, 15, 10, 5, 0, 2);
+		PGPlumeModel lm2 = new PGPlumeModel(2000, 2, 8, 5, 0, 2);
 		sensors = new ArrayList<Sensor>();
 		for (int i = 0; i < posOfSensors.length; i++) {
 			sensors.add(new Sensor(posOfSensors[i][0], posOfSensors[i][1],
@@ -34,13 +34,13 @@ public class PlumeTest {
 	
 	@Ignore
 	@Test
-	public void SigleSourceTest() {
+	public void sigleSourceTest() {
 		double[][] posOfSensors = { { 240.0, 5.0, 0.0 }, { 242.0, 10.0, 0.0 },
 				{ 244.0, 20.0, 0.0 }, { 246.0, 23.0, 0.0 },
 				{ 248.0, 24.0, 0.0 }, { 250.0, 25.0, 0.0 },
 				{ 252.0, 24.0, 0.0 }, { 254.0, 20.0, 0.0 },
 				{ 256.0, 22.0, 0.0 }, { 258.0, 10.0, 0.0 } };
-		PGPlumeModel lm3 = new PGPlumeModel(3100, 2, 8, 5, 0, 2);
+		PGPlumeModel lm3 = new PGPlumeModel(2000, 15, 10, 5, 0, 2);
 		sensors = new ArrayList<Sensor>();
 		for (int i = 0; i < posOfSensors.length; i++) {
 			sensors.add(new Sensor(posOfSensors[i][0], posOfSensors[i][1],
@@ -54,21 +54,21 @@ public class PlumeTest {
 				sensors, 5, 0, 2);
 		long startTime = System.currentTimeMillis();
 
-		// System.out.println("Performing genetic algorithm ...");
-		// GAPlumeSolver gs = new GAPlumeSolver(sensors, 5, 0, 2);
-		// gs.setMinQ0(20.0);
-		// gs.setMaxQ0(8000.0);
-		// gs.setMinY0(2.0);
-		// gs.setMaxY0(50.0);
-		// gs.setMinZ0(0);
-		// gs.setMaxZ0(20.0);
-		// gs.setStopE(1E-6);
-		// gs.setCrossOverRate(0.9);
-		// gs.setMutationRate(0.05);
-		// gs.setSizePopulation(300);
-		// gs.setGenerationBound(200);
-		// finalPlumeChromosome = gs.GASolve();
-		// System.out.println("Result: " + finalPlumeChromosome.toString());
+		 System.out.println("Performing genetic algorithm ...");
+		 GAPlumeSolver gs = new GAPlumeSolver(sensors, 5, 0, 2);
+		 gs.setMinQ0(20.0);
+		 gs.setMaxQ0(8000.0);
+		 gs.setMinY0(2.0);
+		 gs.setMaxY0(50.0);
+		 gs.setMinZ0(0);
+		 gs.setMaxZ0(20.0);
+		 gs.setStopE(1E-10);
+		 gs.setCrossOverRate(0.9);
+		 gs.setMutationRate(0.05);
+		 gs.setSizePopulation(300);
+		 gs.setGenerationBound(200);
+		 finalPlumeChromosome = gs.GASolve();
+		 System.out.println("Result: " + finalPlumeChromosome.toStringWithName());
 
 		System.out.println("Applying Nelder Mead simplex method ...");
 		NelderMeadPlumeSolver nms = new NelderMeadPlumeSolver(sensors,
@@ -80,7 +80,7 @@ public class PlumeTest {
 		nms.setBeta(0.5);
 		nms.setGama(2);
 		nms.setDelta(0.5);
-		nms.setStopE(1E-9);
+		nms.setStopE(1E-10);
 		nms.setMaxiIterationsNumber(9999);
 		finalPlumeChromosome = nms.NelderMeadSolve();
 		System.out
@@ -94,9 +94,9 @@ public class PlumeTest {
 
 	@Ignore
 	@Test
-	public void SensorTest() {
+	public void sensorTest() {
 		PGPlumeModel lm1 = new PGPlumeModel(2000, 15, 10, 5, 0, 2);
-		PGPlumeModel lm2 = new PGPlumeModel(3100, 23, 6, 5, 0, 2);
+		PGPlumeModel lm2 = new PGPlumeModel(3100, 2, 6, 5, 0, 2);
 		for (int i = 0; i < sensors.size(); i++) {
 			assertEquals(lm1.getDensity(sensors.get(i).getxPos(), sensors
 					.get(i).getyPos(), sensors.get(i).getzPos())+lm2.getDensity(sensors.get(i).getxPos(), sensors
@@ -106,41 +106,43 @@ public class PlumeTest {
 	}
 
 	@Test
-	public void SolverTest() {
+	public void multiSourceSolverTest() {
 
-		PlumeChromosome finalPlumeChromosome = new PlumeChromosome(2700, 8, 5,
+		MultiSourcePlumeChromosome finalPlumeChromosome = new MultiSourcePlumeChromosome(2700, 18, 3, 2000, 16, 2,
 				sensors, 5, 0, 2);
 		long startTime = System.currentTimeMillis();
 
-		// System.out.println("Performing genetic algorithm ...");
-		// GAPlumeSolver gs = new GAPlumeSolver(sensors, 5, 0, 2);
-		// gs.setMinQ0(20.0);
-		// gs.setMaxQ0(8000.0);
-		// gs.setMinY0(2.0);
-		// gs.setMaxY0(50.0);
-		// gs.setMinZ0(0);
-		// gs.setMaxZ0(20.0);
-		// gs.setStopE(1E-6);
-		// gs.setCrossOverRate(0.9);
-		// gs.setMutationRate(0.05);
-		// gs.setSizePopulation(300);
-		// gs.setGenerationBound(200);
-		// finalPlumeChromosome = gs.GASolve();
-		// System.out.println("Result: " + finalPlumeChromosome.toString());
+		 System.out.println("Performing genetic algorithm ...");
+		 MultiSourceGAPlumeSolver gs = new MultiSourceGAPlumeSolver(sensors, 5, 0, 2);
+		 gs.setMinQ0(20.0);
+		 gs.setMaxQ0(6000.0);
+		 gs.setMinY0(2.0);
+		 gs.setMaxY0(50.0);
+		 gs.setMinZ0(0);
+		 gs.setMaxZ0(20.0);
+		 gs.setStopE(1E-7);
+		 gs.setCrossOverRate(0.8);
+		 gs.setMutationRate(0.05);
+		 gs.setSizePopulation(300);
+		 gs.setGenerationBound(200);
+		 finalPlumeChromosome = gs.GASolve();
+		 System.out.println("Result: " + finalPlumeChromosome.toStringWithName());
 
 		System.out.println("Applying Nelder Mead simplex method ...");
-		NelderMeadPlumeSolver nms = new NelderMeadPlumeSolver(sensors,
-				finalPlumeChromosome.getQ0(), finalPlumeChromosome.getY0(),
-				finalPlumeChromosome.getZ0(), 5, 0, 2);
-		double[] h1 = { 90, 3, 2 };
+		MultiSourceNelderMeadPlumeSolver nms = new MultiSourceNelderMeadPlumeSolver(sensors,
+				finalPlumeChromosome.getQ01(), finalPlumeChromosome.getY01(),
+				finalPlumeChromosome.getZ01(),finalPlumeChromosome.getQ02(), finalPlumeChromosome.getY02(),
+				finalPlumeChromosome.getZ02(), 5, 0, 2);
+		double[] h1 = { 43, 3, 2, 43, 3, 2};
 		nms.setH(h1);
 		nms.setAlfa(1);
 		nms.setBeta(0.5);
 		nms.setGama(2);
 		nms.setDelta(0.5);
 		nms.setStopE(1E-9);
-		nms.setMaxiIterationsNumber(9999);
+		nms.setMaxiIterationsNumber(4999);
 		finalPlumeChromosome = nms.NelderMeadSolve();
+		 
 		System.out
 				.println("Result: " + finalPlumeChromosome.toStringWithName());
 

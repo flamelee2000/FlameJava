@@ -2,9 +2,8 @@ package cn.edu.buct.ray;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-
-import cn.edu.buct.ray.GAPlumeSolver.FitnessComparator;
 
 public class NelderMeadPlumeSolver {
 
@@ -360,6 +359,15 @@ public class NelderMeadPlumeSolver {
 		}
 		PlumeChromosomes = shrink(PlumeChromosomes, centroid);
 		return PlumeChromosomes;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	static class FitnessComparator implements Comparator {
+		public int compare(Object object1, Object object2) {
+			PlumeChromosome p1 = (PlumeChromosome) object1;
+			PlumeChromosome p2 = (PlumeChromosome) object2;
+			return p1.compareTo(p2);
+		}
 	}
 
 }
