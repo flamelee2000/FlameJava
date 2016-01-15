@@ -13,13 +13,13 @@ public class PlumeTest {
 
 	@Before
 	public void generateData() {
-		double[][] posOfSensors = { { 240.0, 5.0, 0.0 }, { 242.0, 10.0, 0.0 },
-				{ 244.0, 20.0, 0.0 }, { 246.0, 23.0, 0.0 },
-				{ 248.0, 24.0, 0.0 }, { 250.0, 25.0, 0.0 },
-				{ 252.0, 24.0, 0.0 }, { 254.0, 20.0, 0.0 },
-				{ 256.0, 22.0, 0.0 }, { 258.0, 10.0, 0.0 } };
-		PGPlumeModel lm1 = new PGPlumeModel(2800, 15, 10, 5, 0, 2);
-		PGPlumeModel lm2 = new PGPlumeModel(2000, 2, 8, 5, 0, 2);
+		double[][] posOfSensors = { { 240.0, 5.0, 5.0 }, { 242.0, 10.0, 5.0 },
+				{ 244.0, 20.0, 5.0 }, { 246.0, 23.0, 5.0 },
+				{ 248.0, 24.0, 5.0 }, { 250.0, 25.0, 5.0 },
+				{ 252.0, 24.0, 5.0 }, { 254.0, 20.0, 5.0 },
+				{ 256.0, 22.0, 5.0 }, { 258.0, 10.0, 5.0 } };
+		PGPlumeModel lm1 = new PGPlumeModel(3000, 10, 6.5, 5, 0, 2);
+		PGPlumeModel lm2 = new PGPlumeModel(4100, 25, 7.3, 5, 0, 2);
 		sensors = new ArrayList<Sensor>();
 		for (int i = 0; i < posOfSensors.length; i++) {
 			sensors.add(new Sensor(posOfSensors[i][0], posOfSensors[i][1],
@@ -95,8 +95,8 @@ public class PlumeTest {
 	@Ignore
 	@Test
 	public void sensorTest() {
-		PGPlumeModel lm1 = new PGPlumeModel(2000, 15, 10, 5, 0, 2);
-		PGPlumeModel lm2 = new PGPlumeModel(3100, 2, 6, 5, 0, 2);
+		PGPlumeModel lm1 = new PGPlumeModel(3000, 10, 6.5, 5, 0, 2);
+		PGPlumeModel lm2 = new PGPlumeModel(4100, 25, 7.3, 5, 0, 2);
 		for (int i = 0; i < sensors.size(); i++) {
 			assertEquals(lm1.getDensity(sensors.get(i).getxPos(), sensors
 					.get(i).getyPos(), sensors.get(i).getzPos())+lm2.getDensity(sensors.get(i).getxPos(), sensors
@@ -108,7 +108,7 @@ public class PlumeTest {
 	@Test
 	public void multiSourceSolverTest() {
 
-		MultiSourcePlumeChromosome finalPlumeChromosome = new MultiSourcePlumeChromosome(2700, 18, 3, 2000, 16, 2,
+		MultiSourcePlumeChromosome finalPlumeChromosome = new MultiSourcePlumeChromosome(1000, 10, 8, 6000, 50, 23,
 				sensors, 5, 0, 2);
 		long startTime = System.currentTimeMillis();
 
@@ -123,8 +123,8 @@ public class PlumeTest {
 		 gs.setStopE(1E-7);
 		 gs.setCrossOverRate(0.8);
 		 gs.setMutationRate(0.05);
-		 gs.setSizePopulation(300);
-		 gs.setGenerationBound(200);
+		 gs.setSizePopulation(500);
+		 gs.setGenerationBound(300);
 		 finalPlumeChromosome = gs.GASolve();
 		 System.out.println("Result: " + finalPlumeChromosome.toStringWithName());
 
@@ -133,14 +133,14 @@ public class PlumeTest {
 				finalPlumeChromosome.getQ01(), finalPlumeChromosome.getY01(),
 				finalPlumeChromosome.getZ01(),finalPlumeChromosome.getQ02(), finalPlumeChromosome.getY02(),
 				finalPlumeChromosome.getZ02(), 5, 0, 2);
-		double[] h1 = { 43, 3, 2, 43, 3, 2};
+		double[] h1 = { 11, 0.5, 0.2, 11, 0.5, 0.2};
 		nms.setH(h1);
 		nms.setAlfa(1);
 		nms.setBeta(0.5);
 		nms.setGama(2);
 		nms.setDelta(0.5);
 		nms.setStopE(1E-9);
-		nms.setMaxiIterationsNumber(4999);
+		nms.setMaxiIterationsNumber(9999);
 		finalPlumeChromosome = nms.NelderMeadSolve();
 		 
 		System.out
