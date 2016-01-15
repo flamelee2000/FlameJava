@@ -10,4 +10,9 @@ public class FlameTest {
 		System.out.println(flameNumber.addUp());
 	}
 
+	@Test
+	public void testMail(){
+		
+	}
+	
 }
