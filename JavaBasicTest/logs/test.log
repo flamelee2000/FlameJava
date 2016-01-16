@@ -1,0 +1,2 @@
+2016-01-16 22:26:34,139 INFO  com.whoeveryou.FlameLog4j 13 main - Hello, World!
+2016-01-16 22:26:34,140 ERROR com.whoeveryou.FlameLog4j 14 main - Flame, Error
