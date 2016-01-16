@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import cn.edu.buct.ray.GAPlumeSolver.FitnessComparator;
-
 public class MultiSourceNelderMeadPlumeSolver {
 
 	private double stopE;
