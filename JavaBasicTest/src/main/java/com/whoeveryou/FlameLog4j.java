@@ -5,16 +5,15 @@ import org.apache.logging.log4j.Logger;
 
 
 public class FlameLog4j {
-	
-    @SuppressWarnings("unused")
+
 	private static final Logger logger = LogManager.getLogger("Flame");
     
     public static void main(String[] args){
-//        logger.trace("Hello, Trace!");
-//        logger.debug("Hello, Debug!");
+//       logger.trace("Hello, Trace!");
+        logger.debug("Hello, Debug!");
 //        logger.info("Hello, Info!");
 //        logger.warn("Hello, Warn!");
-//        logger.error("Hello, Error!");
+        logger.error("Hello, Error!");
 //        logger.fatal("Hello, Fatal!");
     }
 }

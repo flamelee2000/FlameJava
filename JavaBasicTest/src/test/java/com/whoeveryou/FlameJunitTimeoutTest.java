@@ -1,5 +1,6 @@
 package com.whoeveryou;
 
+
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.Ignore;
@@ -14,7 +15,7 @@ public class FlameJunitTimeoutTest {
     private final CountDownLatch latch = new CountDownLatch(1);
 
     @Rule
-    public Timeout globalTimeout = Timeout.seconds(10); // 10 seconds max per method tested
+    public Timeout globalTimeout = Timeout.seconds(3); // 10 seconds max per method tested
 
     @Test
     public void testSleepForTooLong() throws Exception {
