@@ -2,7 +2,6 @@ package cn.edu.buct.ray;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 public class MultiSourceNelderMeadPlumeSolver {
@@ -474,15 +473,14 @@ public class MultiSourceNelderMeadPlumeSolver {
 			List<MultiSourcePlumeChromosome> MultiSourcePlumeChromosomes) {
 
 		MultiSourcePlumeChromosome centroid;
-		Collections.sort(MultiSourcePlumeChromosomes, new FitnessComparator());
+		Collections.sort(MultiSourcePlumeChromosomes);
 		centroid = calCentroid(MultiSourcePlumeChromosomes);
 
 		int num = 0;
 		while (!terminationTest(centroid) & num < maxiIterationsNumber) {
 			MultiSourcePlumeChromosomes = transformation(
 					MultiSourcePlumeChromosomes, centroid);
-			Collections.sort(MultiSourcePlumeChromosomes,
-					new FitnessComparator());
+			Collections.sort(MultiSourcePlumeChromosomes);
 			centroid = calCentroid(MultiSourcePlumeChromosomes);
 			num++;
 		}
@@ -530,13 +528,4 @@ public class MultiSourceNelderMeadPlumeSolver {
 		return MultiSourcePlumeChromosomes;
 	}
 	
-	@SuppressWarnings("rawtypes")
-	static class FitnessComparator implements Comparator {
-		public int compare(Object object1, Object object2) {
-			MultiSourcePlumeChromosome p1 = (MultiSourcePlumeChromosome) object1;
-			MultiSourcePlumeChromosome p2 = (MultiSourcePlumeChromosome) object2;
-			return p1.compareTo(p2);
-		}
-	}
-
 }

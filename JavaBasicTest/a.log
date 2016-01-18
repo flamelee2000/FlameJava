@@ -6,3 +6,5 @@
 2016-01-17 13:51:56,452 ERROR com.whoeveryou.FlameLog4j [main] Hello, Error!
 2016-01-17 13:52:20,763 DEBUG com.whoeveryou.FlameLog4j [main] Hello, Debug!
 2016-01-17 13:52:20,763 ERROR com.whoeveryou.FlameLog4j [main] Hello, Error!
+2016-01-17 18:07:10,640 DEBUG com.whoeveryou.FlameLog4j [main] Hello, Debug!
+2016-01-17 18:07:10,640 ERROR com.whoeveryou.FlameLog4j [main] Hello, Error!

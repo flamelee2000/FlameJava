@@ -2,7 +2,6 @@ package cn.edu.buct.ray;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -127,7 +126,7 @@ public class GAPuffSolver {
 		int len = puffChromosomes.size();
 		puffChromosomes = puffChromosomes.subList(0, len - halfCrossNum);
 		puffChromosomes.addAll(puffChromosomeAfterCrossOver);
-		Collections.sort(puffChromosomes, new FitnessComparator());
+		Collections.sort(puffChromosomes);
 		return puffChromosomes;
 	}
 
@@ -163,7 +162,7 @@ public class GAPuffSolver {
 									.random() * (maxZ0 - minZ0) + minZ0,
 							sensors, stability, u));
 		}
-		Collections.sort(puffChromosomes, new FitnessComparator());
+		Collections.sort(puffChromosomes);
 		return puffChromosomes;
 	}
 
@@ -194,17 +193,8 @@ public class GAPuffSolver {
 			puffChromosomes.get(randomIndex[i]).setFitness(sensors, stability,
 					u);
 		}
-		Collections.sort(puffChromosomes, new FitnessComparator());
+		Collections.sort(puffChromosomes);
 		return puffChromosomes;
-	}
-
-	@SuppressWarnings("rawtypes")
-	static class FitnessComparator implements Comparator {
-		public int compare(Object object1, Object object2) {
-			PuffChromosome p1 = (PuffChromosome) object1;
-			PuffChromosome p2 = (PuffChromosome) object2;
-			return p1.compareTo(p2);
-		}
 	}
 
 	public void setCrossOverRate(double crossOverRate) {

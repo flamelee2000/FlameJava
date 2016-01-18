@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.buct.ray</groupId>
 	<artifactId>HybridGeneSimplex</artifactId>
-	<version>4.0.1-SNAPSHOT</version>
+	<version>4.0.2-SNAPSHOT</version>
 	<name>HybridGeneSimplex</name>
 	<description>HybridGeneSimplex</description>
 	<dependencies>

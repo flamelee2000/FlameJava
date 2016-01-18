@@ -2,7 +2,6 @@ package cn.edu.buct.ray;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -144,7 +143,7 @@ public class MultiSourceGAPlumeSolver {
 		multiSourcePlumeChromosome = multiSourcePlumeChromosome.subList(0, len
 				- halfCrossNum);
 		multiSourcePlumeChromosome.addAll(plumeChromosomeAfterCrossOver);
-		Collections.sort(multiSourcePlumeChromosome, new FitnessComparator());
+		Collections.sort(multiSourcePlumeChromosome);
 		return multiSourcePlumeChromosome;
 	}
 
@@ -183,7 +182,7 @@ public class MultiSourceGAPlumeSolver {
 					* (maxZ0 - minZ0) + minZ0, sensors, stability, urCondition,
 					u));
 		}
-		Collections.sort(multiSourcePlumeChromosome, new FitnessComparator());
+		Collections.sort(multiSourcePlumeChromosome);
 		return multiSourcePlumeChromosome;
 	}
 
@@ -223,17 +222,8 @@ public class MultiSourceGAPlumeSolver {
 			multiSourcePlumeChromosome.get(randomIndex[i]).setFitness(sensors,
 					stability, urCondition, u);
 		}
-		Collections.sort(multiSourcePlumeChromosome, new FitnessComparator());
+		Collections.sort(multiSourcePlumeChromosome);
 		return multiSourcePlumeChromosome;
-	}
-
-	@SuppressWarnings("rawtypes")
-	static class FitnessComparator implements Comparator {
-		public int compare(Object object1, Object object2) {
-			MultiSourcePlumeChromosome p1 = (MultiSourcePlumeChromosome) object1;
-			MultiSourcePlumeChromosome p2 = (MultiSourcePlumeChromosome) object2;
-			return p1.compareTo(p2);
-		}
 	}
 
 	public void setCrossOverRate(double crossOverRate) {

@@ -26,12 +26,13 @@ public class FlameCollectionSortTest {
         Book b5 = new Book(10004, "天龙八部", 10.4, new GregorianCalendar(2011, 9,  
                 23), "搜狐");  
         list.add(b1);  
+        list.add(b5);
         list.add(b2);  
         list.add(b3);  
         list.add(b4);  
-        list.add(b5);
-        
-        System.out.println("数组序列中的元素:");  
+       
+        System.out.println("数组序列中的元素:");
+        Collections.sort(list);
         myprint(list);  
         Collections.sort(list, new PriceComparator());
         System.out.println("按书的价格排序:");  

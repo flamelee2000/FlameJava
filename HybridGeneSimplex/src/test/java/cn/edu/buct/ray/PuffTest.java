@@ -9,8 +9,7 @@ import org.junit.Test;
 
 public class PuffTest {
 
-	
-    @Ignore
+	@Ignore
 	@Test
 	public void testPuff() {
 		List<Sensor> sensors = new ArrayList<Sensor>();
@@ -54,7 +53,7 @@ public class PuffTest {
 		nms.setStopE(1E-9);
 		nms.setMaxiIterationsNumber(9999);
 		finalPuffChromosome = nms.NelderMeadSolve();
-		System.out.println("Result: " + finalPuffChromosome.toString());
+		System.out.println("Result: " + finalPuffChromosome.toStringWithName());
 		long timeConsumed = System.currentTimeMillis() - startTime;
 		System.out.println("time consumed:" + Long.toString(timeConsumed, 10)
 				+ " (ms)");

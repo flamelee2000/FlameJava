@@ -2,7 +2,6 @@ package cn.edu.buct.ray;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -119,7 +118,7 @@ public class GAPlumeSolver {
 		int len = plumeChromosomes.size();
 		plumeChromosomes = plumeChromosomes.subList(0, len - halfCrossNum);
 		plumeChromosomes.addAll(plumeChromosomeAfterCrossOver);
-		Collections.sort(plumeChromosomes, new FitnessComparator());
+		Collections.sort(plumeChromosomes);
 		return plumeChromosomes;
 	}
 
@@ -155,7 +154,7 @@ public class GAPlumeSolver {
 									.random() * (maxZ0 - minZ0) + minZ0,
 							sensors, stability, urCondition, u));
 		}
-		Collections.sort(plumeChromosomes, new FitnessComparator());
+		Collections.sort(plumeChromosomes);
 		return plumeChromosomes;
 	}
 
@@ -182,17 +181,8 @@ public class GAPlumeSolver {
 			plumeChromosomes.get(randomIndex[i]).setFitness(sensors, stability, urCondition,
 					u);
 		}
-		Collections.sort(plumeChromosomes, new FitnessComparator());
+		Collections.sort(plumeChromosomes);
 		return plumeChromosomes;
-	}
-
-	@SuppressWarnings("rawtypes")
-	static class FitnessComparator implements Comparator {
-		public int compare(Object object1, Object object2) {
-			PlumeChromosome p1 = (PlumeChromosome) object1;
-			PlumeChromosome p2 = (PlumeChromosome) object2;
-			return p1.compareTo(p2);
-		}
 	}
 
 	public void setCrossOverRate(double crossOverRate) {

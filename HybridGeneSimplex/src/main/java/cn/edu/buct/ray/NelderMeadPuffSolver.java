@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import cn.edu.buct.ray.GAPuffSolver.FitnessComparator;
-
 public class NelderMeadPuffSolver {
 
 	private double stopE;
@@ -331,13 +329,13 @@ public class NelderMeadPuffSolver {
 			List<PuffChromosome> puffChromosomes) {
 
 		PuffChromosome centroid;
-		Collections.sort(puffChromosomes, new FitnessComparator());
+		Collections.sort(puffChromosomes);
 		centroid = calCentroid(puffChromosomes);
 
 		int num = 0;
 		while (!terminationTest(centroid) & num < maxiIterationsNumber) {
 			puffChromosomes = transformation(puffChromosomes, centroid);
-			Collections.sort(puffChromosomes, new FitnessComparator());
+			Collections.sort(puffChromosomes);
 			centroid = calCentroid(puffChromosomes);
 			num++;
 		}
