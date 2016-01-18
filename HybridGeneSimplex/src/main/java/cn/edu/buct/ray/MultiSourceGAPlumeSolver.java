@@ -106,15 +106,41 @@ public class MultiSourceGAPlumeSolver {
 		int[] randomIndex = randomCommon(0, sizePopulation - 1,
 				halfCrossNum * 2);
 		List<MultiSourcePlumeChromosome> plumeChromosomeAfterCrossOver = new ArrayList<MultiSourcePlumeChromosome>();
-		MultiSourcePlumeChromosome plumeChromosome;
+		MultiSourcePlumeChromosome plumeChromosome1,plumeChromosome2;
 		for (int i = 0; i < halfCrossNum; i++) {
 			double c = Math.random();
 			double d = 1 - c;
-			plumeChromosome = new MultiSourcePlumeChromosome(
+			plumeChromosome1 = new MultiSourcePlumeChromosome(
 					multiSourcePlumeChromosome.get(randomIndex[i]).getQ01()
 							* c
 							+ multiSourcePlumeChromosome.get(
 									randomIndex[i + halfCrossNum]).getQ01() * d,
+					multiSourcePlumeChromosome.get(randomIndex[i]).getY01()
+							* d
+							+ multiSourcePlumeChromosome.get(
+									randomIndex[i + halfCrossNum]).getY01() * c,
+					multiSourcePlumeChromosome.get(randomIndex[i]).getZ01()
+							* d
+							+ multiSourcePlumeChromosome.get(
+									randomIndex[i + halfCrossNum]).getZ01() * c,
+					multiSourcePlumeChromosome.get(randomIndex[i]).getQ02()
+							* c
+							+ multiSourcePlumeChromosome.get(
+									randomIndex[i + halfCrossNum]).getQ02() * d,
+					multiSourcePlumeChromosome.get(randomIndex[i]).getY02()
+							* d
+							+ multiSourcePlumeChromosome.get(
+									randomIndex[i + halfCrossNum]).getY02() * c,
+					multiSourcePlumeChromosome.get(randomIndex[i]).getZ02()
+							* d
+							+ multiSourcePlumeChromosome.get(
+									randomIndex[i + halfCrossNum]).getZ02() * c,
+					sensors, stability, urCondition, u);
+			plumeChromosome2 = new MultiSourcePlumeChromosome(
+					multiSourcePlumeChromosome.get(randomIndex[i]).getQ01()
+							* d
+							+ multiSourcePlumeChromosome.get(
+									randomIndex[i + halfCrossNum]).getQ01() * c,
 					multiSourcePlumeChromosome.get(randomIndex[i]).getY01()
 							* c
 							+ multiSourcePlumeChromosome.get(
@@ -124,9 +150,9 @@ public class MultiSourceGAPlumeSolver {
 							+ multiSourcePlumeChromosome.get(
 									randomIndex[i + halfCrossNum]).getZ01() * d,
 					multiSourcePlumeChromosome.get(randomIndex[i]).getQ02()
-							* c
+							* d
 							+ multiSourcePlumeChromosome.get(
-									randomIndex[i + halfCrossNum]).getQ02() * d,
+									randomIndex[i + halfCrossNum]).getQ02() * c,
 					multiSourcePlumeChromosome.get(randomIndex[i]).getY02()
 							* c
 							+ multiSourcePlumeChromosome.get(
@@ -136,7 +162,12 @@ public class MultiSourceGAPlumeSolver {
 							+ multiSourcePlumeChromosome.get(
 									randomIndex[i + halfCrossNum]).getZ02() * d,
 					sensors, stability, urCondition, u);
-			plumeChromosomeAfterCrossOver.add(plumeChromosome);
+			
+			if (plumeChromosome1.compareTo(plumeChromosome2) > 0) {
+				plumeChromosomeAfterCrossOver.add(plumeChromosome2);
+			} else {
+				plumeChromosomeAfterCrossOver.add(plumeChromosome1);
+			}
 		}
 
 		int len = multiSourcePlumeChromosome.size();

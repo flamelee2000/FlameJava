@@ -111,17 +111,28 @@ public class GAPuffSolver {
 		int[] randomIndex = randomCommon(0, sizePopulation - 1,
 				halfCrossNum * 2);
 		List<PuffChromosome> puffChromosomeAfterCrossOver = new ArrayList<PuffChromosome>();
-		PuffChromosome puffChromosome;
+		PuffChromosome puffChromosome1,puffChromosome2;
 		for (int i = 0; i < halfCrossNum; i++) {
 			double c=Math.random();
 			double d=1-c;
-			puffChromosome=new PuffChromosome(puffChromosomes.get(randomIndex[i]).getQ0()*c + puffChromosomes
-							.get(randomIndex[i + halfCrossNum]).getQ0()*d, puffChromosomes.get(randomIndex[i]).getX0()*c + puffChromosomes
+			puffChromosome1=new PuffChromosome(puffChromosomes.get(randomIndex[i]).getQ0()*d + puffChromosomes
+							.get(randomIndex[i + halfCrossNum]).getQ0()*c, puffChromosomes.get(randomIndex[i]).getX0()*c + puffChromosomes
 									.get(randomIndex[i + halfCrossNum]).getX0()*d,puffChromosomes.get(randomIndex[i]).getY0()*c+ puffChromosomes
 											.get(randomIndex[i + halfCrossNum]).getY0()*d,puffChromosomes.get(randomIndex[i]).getZ0()*c + puffChromosomes
 													.get(randomIndex[i + halfCrossNum]).getZ0()*d,sensors, stability, u);
-			puffChromosomeAfterCrossOver.add(puffChromosome);
+			puffChromosome2=new PuffChromosome(puffChromosomes.get(randomIndex[i]).getQ0()*c + puffChromosomes
+					.get(randomIndex[i + halfCrossNum]).getQ0()*d, puffChromosomes.get(randomIndex[i]).getX0()*d + puffChromosomes
+							.get(randomIndex[i + halfCrossNum]).getX0()*c,puffChromosomes.get(randomIndex[i]).getY0()*d+ puffChromosomes
+									.get(randomIndex[i + halfCrossNum]).getY0()*c,puffChromosomes.get(randomIndex[i]).getZ0()*d + puffChromosomes
+											.get(randomIndex[i + halfCrossNum]).getZ0()*c,sensors, stability, u);
+	
+			if (puffChromosome1.compareTo(puffChromosome2) > 0) {
+				puffChromosomeAfterCrossOver.add(puffChromosome2);
+			} else {
+				puffChromosomeAfterCrossOver.add(puffChromosome1);
+			}
 		}
+
 
 		int len = puffChromosomes.size();
 		puffChromosomes = puffChromosomes.subList(0, len - halfCrossNum);

@@ -9,7 +9,6 @@ import org.junit.Test;
 
 public class PuffTest {
 
-	@Ignore
 	@Test
 	public void testPuff() {
 		List<Sensor> sensors = new ArrayList<Sensor>();
@@ -38,10 +37,10 @@ public class PuffTest {
 		gs.setStopE(1E-6);
 		gs.setCrossOverRate(0.9);
 		gs.setMutationRate(0.05);
-		gs.setSizePopulation(300);
-		gs.setGenerationBound(200);
+		gs.setSizePopulation(600);
+		gs.setGenerationBound(30);
 		finalPuffChromosome = gs.GASolve();
-		System.out.println("Result: " + finalPuffChromosome.toString());
+		System.out.println("Result: " + finalPuffChromosome.toStringWithName());
 		System.out.println("Applying Nelder Mead simplex method ...");
 		NelderMeadPuffSolver nms = new NelderMeadPuffSolver(sensors, finalPuffChromosome.getQ0(), finalPuffChromosome.getX0(), finalPuffChromosome.getY0(),finalPuffChromosome.getZ0(),5, 2);
 		double[] h1 = { 90, 10, 3, 2 };

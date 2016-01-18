@@ -104,15 +104,42 @@ public class GAPlumeSolver {
 		int[] randomIndex = randomCommon(0, sizePopulation - 1,
 				halfCrossNum * 2);
 		List<PlumeChromosome> plumeChromosomeAfterCrossOver = new ArrayList<PlumeChromosome>();
-		PlumeChromosome plumeChromosome;
+		
+		PlumeChromosome plumeChromosome1, plumeChromosome2;
 		for (int i = 0; i < halfCrossNum; i++) {
-			double c=Math.random();
-			double d=1-c;
-			plumeChromosome=new PlumeChromosome(plumeChromosomes.get(randomIndex[i]).getQ0()*c + plumeChromosomes
-							.get(randomIndex[i + halfCrossNum]).getQ0()*d, plumeChromosomes.get(randomIndex[i]).getY0()*c+ plumeChromosomes
-											.get(randomIndex[i + halfCrossNum]).getY0()*d,plumeChromosomes.get(randomIndex[i]).getZ0()*c + plumeChromosomes
-													.get(randomIndex[i + halfCrossNum]).getZ0()*d,sensors, stability, urCondition, u);
-			plumeChromosomeAfterCrossOver.add(plumeChromosome);
+			double c = Math.random();
+			double d = 1 - c;
+			plumeChromosome1 = new PlumeChromosome(plumeChromosomes.get(
+					randomIndex[i]).getQ0()
+					* c
+					+ plumeChromosomes.get(randomIndex[i + halfCrossNum])
+							.getQ0() * d, plumeChromosomes.get(randomIndex[i])
+					.getY0()
+					* c
+					+ plumeChromosomes.get(randomIndex[i + halfCrossNum])
+							.getY0() * d, plumeChromosomes.get(randomIndex[i])
+					.getZ0()
+					* c
+					+ plumeChromosomes.get(randomIndex[i + halfCrossNum])
+							.getZ0() * d, sensors, stability, urCondition, u);
+			plumeChromosome2 = new PlumeChromosome(plumeChromosomes.get(
+					randomIndex[i]).getQ0()
+					* d
+					+ plumeChromosomes.get(randomIndex[i + halfCrossNum])
+							.getQ0() * c, plumeChromosomes.get(randomIndex[i])
+					.getY0()
+					* c
+					+ plumeChromosomes.get(randomIndex[i + halfCrossNum])
+							.getY0() * d, plumeChromosomes.get(randomIndex[i])
+					.getZ0()
+					* c
+					+ plumeChromosomes.get(randomIndex[i + halfCrossNum])
+							.getZ0() * d, sensors, stability, urCondition, u);
+			if (plumeChromosome1.compareTo(plumeChromosome2) > 0) {
+				plumeChromosomeAfterCrossOver.add(plumeChromosome2);
+			} else {
+				plumeChromosomeAfterCrossOver.add(plumeChromosome1);
+			}
 		}
 
 		int len = plumeChromosomes.size();

@@ -69,8 +69,8 @@ public class PlumeTest {
 		gs.setStopE(1E-10);
 		gs.setCrossOverRate(0.9);
 		gs.setMutationRate(0.05);
-		gs.setSizePopulation(300);
-		gs.setGenerationBound(200);
+		gs.setSizePopulation(500);
+		gs.setGenerationBound(20);
 		finalPlumeChromosome = gs.GASolve();
 		System.out
 				.println("Result: " + finalPlumeChromosome.toStringWithName());
@@ -112,6 +112,7 @@ public class PlumeTest {
 		}
 	}
 
+	@Ignore
 	@Test
 	public void multiSourceSolverTest() {
 
@@ -126,13 +127,13 @@ public class PlumeTest {
 		gs.setMaxQ0(6000.0);
 		gs.setMinY0(2.0);
 		gs.setMaxY0(50.0);
-		gs.setMinZ0(0);
+		gs.setMinZ0(4);
 		gs.setMaxZ0(20.0);
 		gs.setStopE(1E-7);
 		gs.setCrossOverRate(0.8);
 		gs.setMutationRate(0.05);
 		gs.setSizePopulation(500);
-		gs.setGenerationBound(300);
+		gs.setGenerationBound(100);
 		finalPlumeChromosome = gs.GASolve();
 		System.out
 				.println("Result: " + finalPlumeChromosome.toStringWithName());
@@ -150,7 +151,7 @@ public class PlumeTest {
 		nms.setGama(2);
 		nms.setDelta(0.5);
 		nms.setStopE(1E-9);
-		nms.setMaxiIterationsNumber(9999);
+		nms.setMaxiIterationsNumber(3999);
 		finalPlumeChromosome = nms.NelderMeadSolve();
 
 		System.out
