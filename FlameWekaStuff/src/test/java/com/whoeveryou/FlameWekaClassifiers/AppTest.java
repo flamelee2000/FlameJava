@@ -30,9 +30,11 @@ public class AppTest extends TestCase {
 	 */
 
 	public void testApp() {
-		J48Test ap1 = new J48Test();
+		WekaJ48 ap1 = new WekaJ48();
+		MoaHoeffdingTree ap2 = new MoaHoeffdingTree();
 		try {
 			ap1.main(null);
+			ap2.main(null);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

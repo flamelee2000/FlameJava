@@ -64,10 +64,11 @@
 			<artifactId>mail</artifactId>
 			<version>1.4.1</version>
 		</dependency>
+
 		<dependency>
-			<groupId>nz.ac.waikato.cms.weka</groupId>
-			<artifactId>weka-stable</artifactId>
-			<version>3.6.13</version>
+			<groupId>nz.ac.waikato.cms.moa</groupId>
+			<artifactId>moa</artifactId>
+			<version>2014.04</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>

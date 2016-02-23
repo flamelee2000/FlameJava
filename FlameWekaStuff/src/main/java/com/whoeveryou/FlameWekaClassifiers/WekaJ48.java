@@ -11,7 +11,7 @@ import weka.core.converters.ArffLoader;
  * Hello world!
  *
  */
-public class J48Test {  
+public class WekaJ48 {  
 	   
     /** 
      * @param args 
