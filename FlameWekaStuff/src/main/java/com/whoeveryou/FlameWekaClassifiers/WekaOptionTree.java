@@ -18,6 +18,7 @@
  * OptionTree.java
  * Copyright (C) 2009 University of Waikato, Hamilton, New Zealand
  */
+
 package com.whoeveryou.FlameWekaClassifiers;
 
 import weka.core.Utils;
@@ -50,7 +51,8 @@ import javax.swing.tree.DefaultTreeModel;
 /**
  * Displays commandline options as tree.
  * 
- * @author  fracpete (fracpete at waikato dot ac dot nz)
+ * @author FracPete (fracpete at waikato dot ac dot nz)
+ * @version $Revision$
  */
 public class WekaOptionTree
   extends JPanel {
@@ -297,3 +299,4 @@ public class WekaOptionTree
       tree.setOptions(Utils.joinOptions(args));
   }
 }
+
