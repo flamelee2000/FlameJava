@@ -40,13 +40,13 @@ import weka.experiment.InstanceQuery;
  * @version $Revision$
  */
 public class WekaM5PExample {
-  public final static String FILENAME = "/some/where/m5pexample.save";
+  public final static String FILENAME = "C:\\Program Files\\Weka-3-6\\data\\a.txt";
 
-  public final static String URL = "jdbc_url";
+  public final static String URL = "jdbc:mysql://localhost:3306/flameweka";
 
-  public final static String USER = "the_user";
+  public final static String USER = "root";
 
-  public final static String PASSWORD = "the_password";
+  public final static String PASSWORD = "toortoor";
 
   public void train() throws Exception {
     System.out.println("Training...");
@@ -56,9 +56,10 @@ public class WekaM5PExample {
     query.setDatabaseURL(URL);
     query.setUsername(USER);
     query.setPassword(PASSWORD);
-    query.setQuery("select * from some_table");
+    query.setQuery("select * from cpu");
     Instances data = query.retrieveInstances();
-    data.setClassIndex(13);
+    data.setClassIndex(data.numAttributes() - 1);
+//    data.setClassIndex(13);
 
     // train M5P
     M5P cl = new M5P();
@@ -82,11 +83,12 @@ public class WekaM5PExample {
     query.setDatabaseURL(URL);
     query.setUsername(USER);
     query.setPassword(PASSWORD);
-    query.setQuery("select * from some_table"); // retrieves the same table only
+    query.setQuery("select * from cpu"); // retrieves the same table only
                                                 // for simplicty reasons.
     Instances data = query.retrieveInstances();
-    data.setClassIndex(14);
-
+//    data.setClassIndex(14);
+    data.setClassIndex(data.numAttributes() - 1);
+    
     // read model and header
     @SuppressWarnings("unchecked")
     Vector<Object> v = (Vector<Object>) SerializationHelper.read(FILENAME);

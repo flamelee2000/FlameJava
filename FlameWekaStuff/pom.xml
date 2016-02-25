@@ -65,6 +65,11 @@
 			<version>1.4.1</version>
 		</dependency>
 		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.38</version>
+		</dependency>
+		<dependency>
 			<groupId>nz.ac.waikato.cms.moa</groupId>
 			<artifactId>moa</artifactId>
 			<version>2014.04</version>
