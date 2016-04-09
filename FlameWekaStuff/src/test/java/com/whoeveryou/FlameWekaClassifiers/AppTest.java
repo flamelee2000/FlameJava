@@ -33,8 +33,8 @@ public class AppTest extends TestCase {
 	public void testApp() {
 
 		try {
-//			String[] para1={"CLASSIFIER","weka.classifiers.trees.J48","-U","FILTER","weka.filters.unsupervised.instance.Randomize","DATASET","C:\\Program Files\\Weka-3-6\\data\\iris.arff"};
-//			WekaClassifierDemo.main(para1);
+			String[] para1={"CLASSIFIER","weka.classifiers.trees.J48","-U","FILTER","weka.filters.unsupervised.instance.Randomize","DATASET","C:\\Program Files\\Weka-3-6\\data\\iris.arff"};
+			WekaClassifierDemo.main(para1);
 
 //			String[] para2={"C:\\Program Files\\Weka-3-6\\data\\iris.arff"};
 //			WekaClusteringDemo.main(para2);
