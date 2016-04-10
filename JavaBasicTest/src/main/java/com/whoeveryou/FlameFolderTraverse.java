@@ -18,6 +18,11 @@ public class FlameFolderTraverse {
 		this.path = path;
 	}
 
+	public static void main(String args[]){
+		FlameFolderTraverse fft1=new FlameFolderTraverse(args[0]);
+		fft1.doTraverse(fft1.getPath());
+	} 
+
 	public void doTraverse(String path1) {
 		File file = new File(path1);
 		if (file.listFiles() == null)
