@@ -1,4 +1,4 @@
-package com.whoeveryou;
+package com.whoeveryou.FlameLittleTools;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
