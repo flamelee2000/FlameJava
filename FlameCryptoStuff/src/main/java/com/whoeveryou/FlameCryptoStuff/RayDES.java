@@ -1,5 +1,4 @@
 package com.whoeveryou.FlameCryptoStuff;
-import java.math.BigInteger;
 
 class RayDES {
 	
@@ -217,7 +216,7 @@ class RayDES {
 	
 		RayDES d1=new RayDES();
 		
-		String key1=StrtoASCII("12345678");
+		String key1=StrtoASCII("goodluck");
 		d1.setKey(key1);
 		String plaintext1="security";
 		String plaintext=StrtoASCII(plaintext1);
