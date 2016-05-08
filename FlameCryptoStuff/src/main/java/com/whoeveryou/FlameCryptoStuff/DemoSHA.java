@@ -1,7 +1,6 @@
 package com.whoeveryou.FlameCryptoStuff;
 
-import java.security.*;
-import javax.crypto.*;
+import java.security.MessageDigest;
 
 public class DemoSHA {
 	/*
@@ -26,7 +25,7 @@ public class DemoSHA {
 		java.security.MessageDigest md2 = java.security.MessageDigest
 				.getInstance("SHA-384");
 		md2.update(message2.getBytes());
-		System.out.println("验证结果：" + md2.isEqual(digest1, md2.digest()));
+		System.out.println("验证结果：" + MessageDigest.isEqual(digest1, md2.digest()));
 	}
 
 	// 将byte[]型转换成16进制串
@@ -44,13 +43,4 @@ public class DemoSHA {
 		}
 		return strout.toUpperCase();
 	}
-
-	/*
-	 * public static String byte2bin(byte[] ba) { String strout=""; for (int
-	 * i=0;i<ba.length;i++){ int j=ba[i] <0?ba[i]+256:ba[i]; String
-	 * str=Integer.toBinaryString(j); while (str.length()<8) str='0'+str; if
-	 * (i<ba.length-1) strout+=(str+"-"); else strout+=str; } return
-	 * strout.toUpperCase(); }
-	 */
-
 }

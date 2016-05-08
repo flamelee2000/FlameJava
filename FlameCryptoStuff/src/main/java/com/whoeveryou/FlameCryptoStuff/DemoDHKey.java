@@ -20,7 +20,7 @@ public class DemoDHKey {
 	}
 
 	private void run() throws Exception {
-		Security.addProvider(new com.sun.crypto.provider.SunJCE());
+		//Security.addProvider(new com.sun.crypto.provider.SunJCE());
 		// AliceÉú³ÉDH¶Ô
 		System.out.println("Alice create DH pairs");
 		KeyPairGenerator AliceKpairGen = KeyPairGenerator.getInstance("DH");

@@ -19,7 +19,6 @@ public class DemoDESGivenPWD{
 		String Algorithm="DES/ECB/NoPadding"; 
 
 		String plaintext="security";
-		//String plaintext=new String("");
     		
 		try {
 		System.out.println("Ã÷ÎÄ£º"+plaintext);

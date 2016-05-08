@@ -1,7 +1,5 @@
 package com.whoeveryou.FlameCryptoStuff;
 
-import java.io.*;
-import java.security.*;
 import javax.crypto.*;
 import javax.crypto.spec.*;
 

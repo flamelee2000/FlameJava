@@ -13,7 +13,7 @@ public class DemoAES {
 	}
 
 	public void run() {
-		Security.addProvider(new com.sun.crypto.provider.SunJCE());
+		//Security.addProvider(new com.sun.crypto.provider.SunJCE());
 		String Algorithm = "AES";
 		String plaintext = "DemoOfAES";
 		try {

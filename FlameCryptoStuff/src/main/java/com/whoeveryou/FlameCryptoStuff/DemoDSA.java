@@ -1,7 +1,6 @@
 package com.whoeveryou.FlameCryptoStuff;
 
 import java.security.*;
-import java.security.spec.*;
 
 /*
  *	@author Ray

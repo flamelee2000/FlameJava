@@ -1,6 +1,5 @@
 package com.whoeveryou.FlameCryptoStuff;
 
-import java.security.*;
 import javax.crypto.*;
 
 public class DemoDESCBC {
@@ -14,7 +13,7 @@ public class DemoDESCBC {
 
 	public void run() {
 
-		Security.addProvider(new com.sun.crypto.provider.SunJCE());
+		//Security.addProvider(new com.sun.crypto.provider.SunJCE());
 		String Algorithm = "DES";
 		String plaintext = "TestModeTestModeTestModeTestMode";
 		try {
